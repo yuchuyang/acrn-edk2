@@ -198,7 +198,7 @@ APRIORI DXE {
   INF  MdeModulePkg/Universal/PCD/Dxe/Pcd.inf
   INF  OvmfPkg/AmdSevDxe/AmdSevDxe.inf
 !if $(SMM_REQUIRE) == FALSE
-  INF  OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
+  #INF  OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
 !endif
 }
 
@@ -372,7 +372,7 @@ INF  UefiCpuPkg/PiSmmCpuDxeSmm/PiSmmCpuDxeSmm.inf
 #
 # Variable driver stack (SMM)
 #
-INF  OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesSmm.inf
+#INF  OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesSmm.inf
 INF  MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteSmm.inf
 INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableSmm.inf
 INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableSmmRuntimeDxe.inf
@@ -382,7 +382,7 @@ INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableSmmRuntimeDxe.inf
 #
 # Variable driver stack (non-SMM)
 #
-INF  OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
+#INF  OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
 INF  OvmfPkg/EmuVariableFvbRuntimeDxe/Fvb.inf
 INF  MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf
 INF  MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf

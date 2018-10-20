@@ -192,26 +192,16 @@ SmbiosTablePublishEntry (
     return Status;
   }
 
+#ifndef NOT_BHYVE
   //
-  // Add Xen or QEMU SMBIOS data if found
+  // Add bhyve SMBIOS data
   //
-  EntryPointStructure = GetXenSmbiosTables ();
+  EntryPointStructure = GetBhyveSmbiosTables ();
   if (EntryPointStructure != NULL) {
     SmbiosTables = (UINT8*)(UINTN)EntryPointStructure->TableAddress;
-  } else {
-    SmbiosTables = GetQemuSmbiosTables ();
-  }
-
-  if (SmbiosTables != NULL) {
     Status = InstallAllStructures (Smbios, SmbiosTables);
-
-    //
-    // Free SmbiosTables if allocated by Qemu (i.e., NOT by Xen):
-    //
-    if (EntryPointStructure == NULL) {
-      FreePool (SmbiosTables);
-    }
   }
+#endif
 
   return Status;
 }

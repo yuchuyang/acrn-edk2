@@ -36,6 +36,7 @@
   QemuFwCfgAcpi.c
   QemuLoader.h
   Xen.c
+  Bhyve.c
 
 [Packages]
   MdePkg/MdePkg.dec
@@ -58,6 +59,7 @@
   BaseLib
   DxeServicesTableLib
   OrderedCollectionLib
+  BhyveFwCtlLib
 
 [Protocols]
   gEfiAcpiTableProtocolGuid                     # PROTOCOL ALWAYS_CONSUMED

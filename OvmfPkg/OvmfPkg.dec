@@ -62,6 +62,10 @@
   #
   SerializeVariablesLib|Include/Library/SerializeVariablesLib.h
 
+  ##  @libraryclass  Access bhyve's firmware control interface
+  #
+  BhyveFwCtlLib|Include/Library/BhyveFwCtlLib.h
+
   ##  @libraryclass  Invoke Xen hypercalls
   #
   XenHypercallLib|Include/Library/XenHypercallLib.h
@@ -92,7 +96,8 @@
   gUefiOvmfPkgTokenSpaceGuid.PcdOvmfDxeMemFvSize|0x0|UINT32|0x16
 
   ## This flag is used to control the destination port for PlatformDebugLibIoPort
-  gUefiOvmfPkgTokenSpaceGuid.PcdDebugIoPort|0x402|UINT16|4
+  #gUefiOvmfPkgTokenSpaceGuid.PcdDebugIoPort|0x402|UINT16|4
+  gUefiOvmfPkgTokenSpaceGuid.PcdDebugIoPort|0x2F8|UINT16|4
 
   ## When VirtioScsiDxe is instantiated for a HBA, the numbers of targets and
   #  LUNs are retrieved from the host during virtio-scsi setup.

@@ -849,10 +849,12 @@ InitializeApicTimer (
   //
   InitializeLocalApicSoftwareEnable (TRUE);
 
+#if 0
   //
   // Program init-count register.
   //
   WriteLocalApicReg (XAPIC_TIMER_INIT_COUNT_OFFSET, InitCount);
+#endif
 
   if (DivideValue != 0) {
     ASSERT (DivideValue <= 128);
@@ -877,6 +879,11 @@ InitializeApicTimer (
   LvtTimer.Bits.Mask = 0;
   LvtTimer.Bits.Vector = Vector;
   WriteLocalApicReg (XAPIC_LVT_TIMER_OFFSET, LvtTimer.Uint32);
+
+  //
+  // Program init-count register.
+  //
+  WriteLocalApicReg (XAPIC_TIMER_INIT_COUNT_OFFSET, InitCount);
 }
 
 /**
