@@ -361,6 +361,9 @@ PlatformBootManagerBeforeConsole (
   RETURN_STATUS PcdStatus;
 
   DEBUG ((EFI_D_INFO, "PlatformBootManagerBeforeConsole\n"));
+
+  CopyGuid (&gTerminalTypeDeviceNode.Guid, &gEfiTtyTermGuid);
+
   InstallDevicePathCallback ();
 
   VisitAllInstancesOfProtocol (&gEfiPciRootBridgeIoProtocolGuid,
