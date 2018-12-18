@@ -44,17 +44,6 @@ InstallAcpiTable (
   OUT  UINTN                         *TableKey
   );
 
-#ifndef NOT_BHYVE
-EFI_STATUS
-EFIAPI
-BhyveInstallAcpiTable (
-  IN   EFI_ACPI_TABLE_PROTOCOL       *AcpiProtocol,
-  IN   VOID                          *AcpiTableBuffer,
-  IN   UINTN                         AcpiTableBufferSize,
-  OUT  UINTN                         *TableKey
-  );
-#endif
-
 BOOLEAN
 QemuDetected (
   VOID
