@@ -36,6 +36,7 @@
   QemuFwCfgAcpi.c
   QemuLoader.h
   Xen.c
+  Acrn.c
 
 [Packages]
   MdePkg/MdePkg.dec

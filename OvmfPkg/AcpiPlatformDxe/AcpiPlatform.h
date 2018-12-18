@@ -71,6 +71,12 @@ InstallXenTables (
 
 EFI_STATUS
 EFIAPI
+InstallAcrnTables (
+  IN   EFI_ACPI_TABLE_PROTOCOL       *AcpiProtocol
+  );
+
+EFI_STATUS
+EFIAPI
 InstallQemuFwCfgTables (
   IN   EFI_ACPI_TABLE_PROTOCOL       *AcpiProtocol
   );
