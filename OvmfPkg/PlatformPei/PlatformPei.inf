@@ -108,6 +108,9 @@
   gUefiCpuPkgTokenSpaceGuid.PcdCpuApInitTimeOutInMicroSeconds
   gUefiCpuPkgTokenSpaceGuid.PcdCpuApStackSize
 
+[Pcd.IA32, Pcd.X64]
+  gEfiMdePkgTokenSpaceGuid.PcdFSBClock
+
 [FixedPcd]
   gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress
 

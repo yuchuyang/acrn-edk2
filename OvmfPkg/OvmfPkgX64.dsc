@@ -573,6 +573,7 @@
   gUefiOvmfPkgTokenSpaceGuid.PcdPciMmio64Size|0x0
 
   gEfiMdePkgTokenSpaceGuid.PcdPlatformBootTimeOut|0
+  gEfiMdePkgTokenSpaceGuid.PcdFSBClock|200000000
 
   # Set video resolution for text setup.
   gEfiMdeModulePkgTokenSpaceGuid.PcdSetupVideoHorizontalResolution|640
