@@ -650,7 +650,7 @@
 !if $(SMM_REQUIRE) == TRUE
   OvmfPkg/SmmAccess/SmmAccessPei.inf
 !endif
-  UefiCpuPkg/CpuMpPei/CpuMpPei.inf
+  #UefiCpuPkg/CpuMpPei/CpuMpPei.inf
 
 !if $(TPM2_ENABLE) == TRUE
   OvmfPkg/Tcg/Tcg2Config/Tcg2ConfigPei.inf
@@ -692,13 +692,13 @@
 !endif
   }
 
-  MdeModulePkg/Universal/EbcDxe/EbcDxe.inf
-  PcAtChipsetPkg/8259InterruptControllerDxe/8259.inf
+  #MdeModulePkg/Universal/EbcDxe/EbcDxe.inf
+  #PcAtChipsetPkg/8259InterruptControllerDxe/8259.inf
   UefiCpuPkg/CpuIo2Dxe/CpuIo2Dxe.inf
   UefiCpuPkg/CpuDxe/CpuDxe.inf
   PcAtChipsetPkg/HpetTimerDxe/HpetTimerDxe.inf
-  OvmfPkg/IncompatiblePciDeviceSupportDxe/IncompatiblePciDeviceSupport.inf
-  OvmfPkg/PciHotPlugInitDxe/PciHotPlugInit.inf
+  #OvmfPkg/IncompatiblePciDeviceSupportDxe/IncompatiblePciDeviceSupport.inf
+  #OvmfPkg/PciHotPlugInitDxe/PciHotPlugInit.inf
   MdeModulePkg/Bus/Pci/PciHostBridgeDxe/PciHostBridgeDxe.inf {
     <LibraryClasses>
       PciHostBridgeLib|OvmfPkg/Library/PciHostBridgeLib/PciHostBridgeLib.inf
@@ -711,7 +711,7 @@
   MdeModulePkg/Universal/ResetSystemRuntimeDxe/ResetSystemRuntimeDxe.inf
   MdeModulePkg/Universal/Metronome/Metronome.inf
   PcAtChipsetPkg/PcatRealTimeClockRuntimeDxe/PcatRealTimeClockRuntimeDxe.inf
-  MdeModulePkg/Universal/DriverHealthManagerDxe/DriverHealthManagerDxe.inf
+  #MdeModulePkg/Universal/DriverHealthManagerDxe/DriverHealthManagerDxe.inf
   MdeModulePkg/Universal/BdsDxe/BdsDxe.inf {
     <LibraryClasses>
 !ifdef $(CSM_ENABLE)
@@ -719,7 +719,7 @@
       NULL|IntelFrameworkModulePkg/Library/LegacyBootManagerLib/LegacyBootManagerLib.inf
 !endif
   }
-  MdeModulePkg/Logo/LogoDxe.inf
+  #MdeModulePkg/Logo/LogoDxe.inf
   MdeModulePkg/Application/UiApp/UiApp.inf {
     <LibraryClasses>
       NULL|MdeModulePkg/Library/DeviceManagerUiLib/DeviceManagerUiLib.inf
@@ -731,22 +731,22 @@
 !endif
   }
   OvmfPkg/VirtioPciDeviceDxe/VirtioPciDeviceDxe.inf
-  OvmfPkg/Virtio10Dxe/Virtio10.inf
+  #OvmfPkg/Virtio10Dxe/Virtio10.inf
   OvmfPkg/VirtioBlkDxe/VirtioBlk.inf
-  OvmfPkg/VirtioScsiDxe/VirtioScsi.inf
-  OvmfPkg/VirtioRngDxe/VirtioRng.inf
-  OvmfPkg/XenIoPciDxe/XenIoPciDxe.inf
-  OvmfPkg/XenBusDxe/XenBusDxe.inf
-  OvmfPkg/XenPvBlkDxe/XenPvBlkDxe.inf
+  #OvmfPkg/VirtioScsiDxe/VirtioScsi.inf
+  #OvmfPkg/VirtioRngDxe/VirtioRng.inf
+  #OvmfPkg/XenIoPciDxe/XenIoPciDxe.inf
+  #OvmfPkg/XenBusDxe/XenBusDxe.inf
+  #OvmfPkg/XenPvBlkDxe/XenPvBlkDxe.inf
   MdeModulePkg/Universal/WatchdogTimerDxe/WatchdogTimer.inf
   MdeModulePkg/Universal/MonotonicCounterRuntimeDxe/MonotonicCounterRuntimeDxe.inf
   MdeModulePkg/Universal/CapsuleRuntimeDxe/CapsuleRuntimeDxe.inf
   MdeModulePkg/Universal/Console/ConPlatformDxe/ConPlatformDxe.inf
   MdeModulePkg/Universal/Console/ConSplitterDxe/ConSplitterDxe.inf
-  MdeModulePkg/Universal/Console/GraphicsConsoleDxe/GraphicsConsoleDxe.inf {
-    <LibraryClasses>
-      PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
-  }
+  #MdeModulePkg/Universal/Console/GraphicsConsoleDxe/GraphicsConsoleDxe.inf {
+  #  <LibraryClasses>
+  #    PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
+  #}
   MdeModulePkg/Universal/Console/TerminalDxe/TerminalDxe.inf
   MdeModulePkg/Universal/DevicePathDxe/DevicePathDxe.inf {
     <LibraryClasses>
@@ -756,24 +756,24 @@
   MdeModulePkg/Universal/PrintDxe/PrintDxe.inf
   MdeModulePkg/Universal/Disk/DiskIoDxe/DiskIoDxe.inf
   MdeModulePkg/Universal/Disk/PartitionDxe/PartitionDxe.inf
-  MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf
+  #MdeModulePkg/Universal/Disk/RamDiskDxe/RamDiskDxe.inf
   MdeModulePkg/Universal/Disk/UnicodeCollation/EnglishDxe/EnglishDxe.inf
   FatPkg/EnhancedFatDxe/Fat.inf
   MdeModulePkg/Universal/Disk/UdfDxe/UdfDxe.inf
-  MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
-  MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
+  #MdeModulePkg/Bus/Scsi/ScsiBusDxe/ScsiBusDxe.inf
+  #MdeModulePkg/Bus/Scsi/ScsiDiskDxe/ScsiDiskDxe.inf
   OvmfPkg/SataControllerDxe/SataControllerDxe.inf
   MdeModulePkg/Bus/Ata/AtaAtapiPassThru/AtaAtapiPassThru.inf
   MdeModulePkg/Bus/Ata/AtaBusDxe/AtaBusDxe.inf
-  MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
+  #MdeModulePkg/Bus/Pci/NvmExpressDxe/NvmExpressDxe.inf
   MdeModulePkg/Universal/HiiDatabaseDxe/HiiDatabaseDxe.inf
   MdeModulePkg/Universal/SetupBrowserDxe/SetupBrowserDxe.inf
   MdeModulePkg/Universal/DisplayEngineDxe/DisplayEngineDxe.inf
-  MdeModulePkg/Universal/MemoryTest/NullMemoryTestDxe/NullMemoryTestDxe.inf
+  #MdeModulePkg/Universal/MemoryTest/NullMemoryTestDxe/NullMemoryTestDxe.inf
 
-  OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
-  OvmfPkg/QemuRamfbDxe/QemuRamfbDxe.inf
-  OvmfPkg/VirtioGpuDxe/VirtioGpu.inf
+  #OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
+  #OvmfPkg/QemuRamfbDxe/QemuRamfbDxe.inf
+  #OvmfPkg/VirtioGpuDxe/VirtioGpu.inf
 
   #
   # ISA Support
@@ -782,7 +782,7 @@
   IntelFrameworkModulePkg/Bus/Isa/IsaBusDxe/IsaBusDxe.inf
   IntelFrameworkModulePkg/Bus/Isa/IsaSerialDxe/IsaSerialDxe.inf
   IntelFrameworkModulePkg/Bus/Isa/Ps2KeyboardDxe/Ps2keyboardDxe.inf
-  IntelFrameworkModulePkg/Bus/Isa/IsaFloppyDxe/IsaFloppyDxe.inf
+  #IntelFrameworkModulePkg/Bus/Isa/IsaFloppyDxe/IsaFloppyDxe.inf
 
   #
   # SMBIOS Support
@@ -801,23 +801,23 @@
   OvmfPkg/AcpiTables/AcpiTables.inf
   MdeModulePkg/Universal/Acpi/S3SaveStateDxe/S3SaveStateDxe.inf
   MdeModulePkg/Universal/Acpi/BootScriptExecutorDxe/BootScriptExecutorDxe.inf
-  MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
+  #MdeModulePkg/Universal/Acpi/BootGraphicsResourceTableDxe/BootGraphicsResourceTableDxe.inf
 
   #
   # Network Support
   #
-  MdeModulePkg/Universal/Network/SnpDxe/SnpDxe.inf
-  MdeModulePkg/Universal/Network/DpcDxe/DpcDxe.inf
-  MdeModulePkg/Universal/Network/MnpDxe/MnpDxe.inf
-  MdeModulePkg/Universal/Network/VlanConfigDxe/VlanConfigDxe.inf
-  MdeModulePkg/Universal/Network/ArpDxe/ArpDxe.inf
-  MdeModulePkg/Universal/Network/Dhcp4Dxe/Dhcp4Dxe.inf
-  MdeModulePkg/Universal/Network/Ip4Dxe/Ip4Dxe.inf
-  MdeModulePkg/Universal/Network/Mtftp4Dxe/Mtftp4Dxe.inf
-  MdeModulePkg/Universal/Network/Udp4Dxe/Udp4Dxe.inf
-  NetworkPkg/UefiPxeBcDxe/UefiPxeBcDxe.inf
-  NetworkPkg/TcpDxe/TcpDxe.inf
-  NetworkPkg/IScsiDxe/IScsiDxe.inf
+  #MdeModulePkg/Universal/Network/SnpDxe/SnpDxe.inf
+  #MdeModulePkg/Universal/Network/DpcDxe/DpcDxe.inf
+  #MdeModulePkg/Universal/Network/MnpDxe/MnpDxe.inf
+  #MdeModulePkg/Universal/Network/VlanConfigDxe/VlanConfigDxe.inf
+  #MdeModulePkg/Universal/Network/ArpDxe/ArpDxe.inf
+  #MdeModulePkg/Universal/Network/Dhcp4Dxe/Dhcp4Dxe.inf
+  #MdeModulePkg/Universal/Network/Ip4Dxe/Ip4Dxe.inf
+  #MdeModulePkg/Universal/Network/Mtftp4Dxe/Mtftp4Dxe.inf
+  #MdeModulePkg/Universal/Network/Udp4Dxe/Udp4Dxe.inf
+  #NetworkPkg/UefiPxeBcDxe/UefiPxeBcDxe.inf
+  #NetworkPkg/TcpDxe/TcpDxe.inf
+  #NetworkPkg/IScsiDxe/IScsiDxe.inf
 !if $(NETWORK_IP6_ENABLE) == TRUE
   NetworkPkg/Ip6Dxe/Ip6Dxe.inf
   NetworkPkg/Udp6Dxe/Udp6Dxe.inf
@@ -837,17 +837,17 @@
       NULL|OvmfPkg/Library/TlsAuthConfigLib/TlsAuthConfigLib.inf
   }
 !endif
-  OvmfPkg/VirtioNetDxe/VirtioNet.inf
+  #OvmfPkg/VirtioNetDxe/VirtioNet.inf
 
   #
   # Usb Support
   #
-  MdeModulePkg/Bus/Pci/UhciDxe/UhciDxe.inf
-  MdeModulePkg/Bus/Pci/EhciDxe/EhciDxe.inf
-  MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
-  MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
-  MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
-  MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
+  #MdeModulePkg/Bus/Pci/UhciDxe/UhciDxe.inf
+  #MdeModulePkg/Bus/Pci/EhciDxe/EhciDxe.inf
+  #MdeModulePkg/Bus/Pci/XhciDxe/XhciDxe.inf
+  #MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
+  #MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
+  #MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
 
 !ifdef $(CSM_ENABLE)
   IntelFrameworkModulePkg/Csm/BiosThunk/VideoDxe/VideoDxe.inf {
@@ -859,10 +859,10 @@
 !endif
 
 !ifndef $(USE_OLD_SHELL)
-  ShellPkg/DynamicCommand/TftpDynamicCommand/TftpDynamicCommand.inf {
-    <PcdsFixedAtBuild>
-      gEfiShellPkgTokenSpaceGuid.PcdShellLibAutoInitialize|FALSE
-  }
+  #ShellPkg/DynamicCommand/TftpDynamicCommand/TftpDynamicCommand.inf {
+  #  <PcdsFixedAtBuild>
+  #    gEfiShellPkgTokenSpaceGuid.PcdShellLibAutoInitialize|FALSE
+  #}
   ShellPkg/Application/Shell/Shell.inf {
     <LibraryClasses>
       ShellCommandLib|ShellPkg/Library/UefiShellCommandLib/UefiShellCommandLib.inf
@@ -892,7 +892,7 @@
 !endif
 
   OvmfPkg/PlatformDxe/Platform.inf
-  OvmfPkg/AmdSevDxe/AmdSevDxe.inf
+  #OvmfPkg/AmdSevDxe/AmdSevDxe.inf
   OvmfPkg/IoMmuDxe/IoMmuDxe.inf
 
 !if $(SMM_REQUIRE) == TRUE
