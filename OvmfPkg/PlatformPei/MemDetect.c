@@ -277,7 +277,7 @@ GetFirstNonAddress (
   //
   // set FirstNonAddress to suppress incorrect compiler/analyzer warnings
   //
-  FirstNonAddress = 0;
+  FirstNonAddress = Pci64Base = 0;
 
   //
   // If QEMU presents an E820 map, then get the highest exclusive >=4GB RAM
@@ -288,7 +288,9 @@ GetFirstNonAddress (
   //
   Status = ScanOrAdd64BitE820Ram (&FirstNonAddress);
   if (EFI_ERROR (Status)) {
-    FirstNonAddress = BASE_4GB + GetSystemMemorySizeAbove4gb ();
+    if (AcrnGetFirstNonAddress (&FirstNonAddress) != RETURN_SUCCESS) {
+      FirstNonAddress = BASE_4GB + GetSystemMemorySizeAbove4gb ();
+    }
   }
 
   //
@@ -307,6 +309,7 @@ GetFirstNonAddress (
   // consider the 64-bit PCI host aperture too. Fetch the default size.
   //
   Pci64Size = PcdGet64 (PcdPciMmio64Size);
+  AcrnFindPciMmio64Aperture (&Pci64Base, &Pci64Size);
 
   //
   // See if the user specified the number of megabytes for the 64-bit PCI host
@@ -369,7 +372,11 @@ GetFirstNonAddress (
   // SeaBIOS aligns both boundaries of the 64-bit PCI host aperture to 1GB, so
   // that the host can map it with 1GB hugepages. Follow suit.
   //
-  Pci64Base = ALIGN_VALUE (FirstNonAddress, (UINT64)SIZE_1GB);
+  if (Pci64Base == 0) {
+    Pci64Base = FirstNonAddress;
+  }
+
+  Pci64Base = ALIGN_VALUE (Pci64Base, (UINT64)SIZE_1GB);
   Pci64Size = ALIGN_VALUE (Pci64Size, (UINT64)SIZE_1GB);
 
   //
@@ -396,9 +403,12 @@ GetFirstNonAddress (
   }
 
   //
-  // The useful address space ends with the 64-bit PCI host aperture.
+  // The useful address space may end with the 64-bit PCI host aperture.
   //
-  FirstNonAddress = Pci64Base + Pci64Size;
+  if (FirstNonAddress < Pci64Base + Pci64Size) {
+    FirstNonAddress = Pci64Base + Pci64Size;
+  }
+
   return FirstNonAddress;
 }
 
@@ -713,7 +723,9 @@ InitializeRamRegions (
   )
 {
   if (!mXen) {
-    QemuInitializeRam ();
+    if (AcrnPublishRamRegions () != RETURN_SUCCESS) {
+      QemuInitializeRam ();
+    }
   } else {
     XenPublishRamRegions ();
   }

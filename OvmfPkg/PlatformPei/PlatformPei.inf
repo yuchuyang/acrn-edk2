@@ -40,6 +40,7 @@
   Platform.h
   Xen.c
   Xen.h
+  Acrn.c
 
 [Packages]
   IntelFrameworkModulePkg/IntelFrameworkModulePkg.dec

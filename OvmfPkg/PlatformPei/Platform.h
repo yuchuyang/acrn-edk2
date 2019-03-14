@@ -110,6 +110,22 @@ XenPublishRamRegions (
   VOID
   );
 
+RETURN_STATUS
+AcrnGetFirstNonAddress (
+  OUT  UINT64               *MaxAddress OPTIONAL
+  );
+
+RETURN_STATUS
+AcrnFindPciMmio64Aperture (
+  OUT  UINT64               *Pci64Base OPTIONAL,
+  OUT  UINT64               *Pci64Size OPTIONAL
+  );
+
+RETURN_STATUS
+AcrnPublishRamRegions (
+  VOID
+  );
+
 extern EFI_BOOT_MODE mBootMode;
 
 extern BOOLEAN mS3Supported;
