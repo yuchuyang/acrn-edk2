@@ -582,8 +582,13 @@ MaxCpuCountInitialization (
   UINT16        ProcessorCount;
   RETURN_STATUS PcdStatus;
 
-  QemuFwCfgSelectItem (QemuFwCfgItemSmpCpuCount);
-  ProcessorCount = QemuFwCfgRead16 ();
+  if (QemuFwCfgIsAvailable ()) {
+    QemuFwCfgSelectItem (QemuFwCfgItemSmpCpuCount);
+    ProcessorCount = QemuFwCfgRead16 ();
+  } else {
+    ProcessorCount = 0;
+  }
+
   //
   // If the fw_cfg key or fw_cfg entirely is unavailable, load mMaxCpuCount
   // from the PCD default. No change to PCDs.

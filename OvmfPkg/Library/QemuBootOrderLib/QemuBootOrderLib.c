@@ -2105,6 +2105,10 @@ GetFrontPageTimeoutFromQemu (
   FIRMWARE_CONFIG_ITEM BootMenuWaitItem;
   UINTN                BootMenuWaitSize;
 
+  if (!QemuFwCfgIsAvailable ()) {
+    return PcdGet16 (PcdPlatformBootTimeOut);
+  }
+
   QemuFwCfgSelectItem (QemuFwCfgItemBootMenu);
   if (QemuFwCfgRead16 () == 0) {
     //
