@@ -212,8 +212,13 @@ GetSystemMemorySizeBelow4gb (
   VOID
   )
 {
-  UINT8 Cmos0x34;
-  UINT8 Cmos0x35;
+  UINT32 AcrnMemSizeBelow4gb;
+  UINT8  Cmos0x34;
+  UINT8  Cmos0x35;
+
+  if (AcrnGetSystemMemorySizeBelow4gb (&AcrnMemSizeBelow4gb) == RETURN_SUCCESS) {
+    return AcrnMemSizeBelow4gb;
+  }
 
   //
   // CMOS 0x34/0x35 specifies the system memory above 16 MB.
@@ -236,8 +241,13 @@ UINT64
 GetSystemMemorySizeAbove4gb (
   )
 {
+  UINT64 AcrnMemSizeAbove4gb;
   UINT32 Size;
   UINTN  CmosIndex;
+
+  if (AcrnGetSystemMemorySizeAbove4gb (&AcrnMemSizeAbove4gb) == RETURN_SUCCESS) {
+    return AcrnMemSizeAbove4gb;
+  }
 
   //
   // CMOS 0x5b-0x5d specifies the system memory above 4GB MB.

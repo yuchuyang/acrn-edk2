@@ -46,6 +46,70 @@ E820IsValid (
 
 
 RETURN_STATUS
+AcrnGetSystemMemorySizeBelow4gb (
+  OUT  UINT32               *MemSize OPTIONAL
+  )
+{
+  ACRN_E820_INFO    *E820;
+  INT32             Loop;
+  EFI_E820_ENTRY64  *Entry;
+
+  //
+  // Parse E820 map
+  //
+  E820 = (VOID *)ACRN_E820_PHYSICAL_ADDRESS;
+
+  if (!E820IsValid (E820)) {
+    return RETURN_UNSUPPORTED;
+  }
+
+  for (Loop = (INT32)(E820->E820EntriesCount - 1), Entry = &E820->E820Map[Loop];
+       Loop >= 0; Entry = &E820->E820Map[--Loop]) {
+    if (Entry->BaseAddr + Entry->Length < BASE_4GB &&
+        Entry->Type == EfiAcpiAddressRangeMemory) {
+      *MemSize = Entry->BaseAddr + Entry->Length;
+      return RETURN_SUCCESS;
+    }
+  }
+
+  return RETURN_NOT_FOUND;
+}
+
+
+RETURN_STATUS
+AcrnGetSystemMemorySizeAbove4gb (
+  OUT  UINT64               *MemSize OPTIONAL
+  )
+{
+  ACRN_E820_INFO    *E820;
+  INT32             Loop;
+  EFI_E820_ENTRY64  *Entry;
+  UINT64            TotalMemSize = 0;
+
+  //
+  // Parse E820 map
+  //
+  E820 = (VOID *)ACRN_E820_PHYSICAL_ADDRESS;
+
+  if (!E820IsValid (E820)) {
+    return RETURN_UNSUPPORTED;
+  }
+
+  for (Loop = (INT32)(E820->E820EntriesCount - 1), Entry = &E820->E820Map[Loop];
+       Loop >= 0 && Entry->BaseAddr + Entry->Length > BASE_4GB;
+       Entry = &E820->E820Map[--Loop]) {
+    ASSERT (Entry->BaseAddr >= BASE_4GB);
+    if (Entry->Type == EfiAcpiAddressRangeMemory) {
+      TotalMemSize += Entry->Length;
+    }
+  }
+
+  *MemSize = TotalMemSize;
+  return RETURN_SUCCESS;
+}
+
+
+RETURN_STATUS
 AcrnGetFirstNonAddress (
   OUT  UINT64               *MaxAddress OPTIONAL
   )
