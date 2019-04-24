@@ -17,6 +17,7 @@
 
 #include <IndustryStandard/Pci.h>
 #include <IndustryStandard/Q35MchIch9.h>
+#include <IndustryStandard/AcrnPlatform.h>
 
 #include <Protocol/PciHostBridgeResourceAllocation.h>
 #include <Protocol/PciRootBridgeIo.h>
@@ -217,7 +218,8 @@ PciHostBridgeGetRootBridges (
   PCI_ROOT_BRIDGE_APERTURE Mem;
   PCI_ROOT_BRIDGE_APERTURE MemAbove4G;
 
-  if (PcdGetBool (PcdPciDisableBusEnumeration)) {
+  if (PcdGet16 (PcdOvmfHostBridgePciDevId) != ACRN_HOSTBRIDGE_DEVICE_ID &&
+      PcdGetBool (PcdPciDisableBusEnumeration)) {
     return ScanForRootBridges (Count);
   }
 
@@ -225,15 +227,25 @@ PciHostBridgeGetRootBridges (
   ZeroMem (&Mem, sizeof (Mem));
   ZeroMem (&MemAbove4G, sizeof (MemAbove4G));
 
-  Attributes = EFI_PCI_ATTRIBUTE_IDE_PRIMARY_IO |
-    EFI_PCI_ATTRIBUTE_IDE_SECONDARY_IO |
-    EFI_PCI_ATTRIBUTE_ISA_IO_16 |
-    EFI_PCI_ATTRIBUTE_ISA_MOTHERBOARD_IO |
-    EFI_PCI_ATTRIBUTE_VGA_MEMORY |
-    EFI_PCI_ATTRIBUTE_VGA_IO_16 |
-    EFI_PCI_ATTRIBUTE_VGA_PALETTE_IO_16;
+  Attributes = EFI_PCI_ATTRIBUTE_ISA_IO_16 |
+    EFI_PCI_ATTRIBUTE_ISA_MOTHERBOARD_IO;
 
-  AllocationAttributes = EFI_PCI_HOST_BRIDGE_COMBINE_MEM_PMEM;
+  if (PcdGet16 (PcdOvmfHostBridgePciDevId) == ACRN_HOSTBRIDGE_DEVICE_ID) {
+    Attributes |= EFI_PCI_ATTRIBUTE_ISA_IO;
+  } else {
+    Attributes |= EFI_PCI_ATTRIBUTE_IDE_PRIMARY_IO |
+      EFI_PCI_ATTRIBUTE_IDE_SECONDARY_IO |
+      EFI_PCI_ATTRIBUTE_VGA_MEMORY |
+      EFI_PCI_ATTRIBUTE_VGA_IO_16 |
+      EFI_PCI_ATTRIBUTE_VGA_PALETTE_IO_16;
+  }
+
+  AllocationAttributes = 0;
+
+  if (PcdGet16 (PcdOvmfHostBridgePciDevId) != ACRN_HOSTBRIDGE_DEVICE_ID) {
+    AllocationAttributes |= EFI_PCI_HOST_BRIDGE_COMBINE_MEM_PMEM;
+  }
+
   if (PcdGet64 (PcdPciMmio64Size) > 0) {
     AllocationAttributes |= EFI_PCI_HOST_BRIDGE_MEM64_DECODE;
     MemAbove4G.Base = PcdGet64 (PcdPciMmio64Base);
@@ -323,6 +335,10 @@ PciHostBridgeGetRootBridges (
       if (EFI_ERROR (Status)) {
         goto FreeBridges;
       }
+      if (PcdGet16 (PcdOvmfHostBridgePciDevId) == ACRN_HOSTBRIDGE_DEVICE_ID) {
+        Bridges[Initialized].ResourceAssigned = TRUE;
+      }
+
       ++Initialized;
       LastRootBridgeNumber = RootBridgeNumber;
     }
@@ -348,6 +364,10 @@ PciHostBridgeGetRootBridges (
   if (EFI_ERROR (Status)) {
     goto FreeBridges;
   }
+  if (PcdGet16 (PcdOvmfHostBridgePciDevId) == ACRN_HOSTBRIDGE_DEVICE_ID) {
+    Bridges[Initialized].ResourceAssigned = TRUE;
+  }
+
   ++Initialized;
 
   *Count = Initialized;

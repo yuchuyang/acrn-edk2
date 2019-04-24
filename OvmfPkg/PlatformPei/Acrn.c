@@ -198,30 +198,17 @@ AcrnPublishRamRegions (
 
   for (Loop = 0, Entry = &E820->E820Map[Loop]; Loop < E820->E820EntriesCount;
        Entry = &E820->E820Map[++Loop]) {
-    if (Entry->BaseAddr >= BASE_4GB &&
-        Entry->Type == EfiAcpiAddressRangeReserved) {
-      //
-      // XXX
-      // 64-bit PCI host aperture
-      //
-      // The core PciHostBridgeDxe driver does not correctly add this
-      // range to the GCD memory space map through our PciHostBridgeLib
-      // instance; build an HOB here.
-      //
-      AddIoMemoryBaseSizeHob (Entry->BaseAddr, Entry->Length);
-    } else {
-      //
-      // Only care about RAM
-      //
-      if (Entry->Type != EfiAcpiAddressRangeMemory) {
-        continue;
-      }
+    //
+    // Only care about RAM
+    //
+    if (Entry->Type != EfiAcpiAddressRangeMemory) {
+      continue;
+    }
 
-      AddMemoryBaseSizeHob (Entry->BaseAddr, Entry->Length);
+    AddMemoryBaseSizeHob (Entry->BaseAddr, Entry->Length);
 
-      if (MtrrSupported) {
-        MtrrSetMemoryAttribute (Entry->BaseAddr, Entry->Length, CacheWriteBack);
-      }
+    if (MtrrSupported) {
+      MtrrSetMemoryAttribute (Entry->BaseAddr, Entry->Length, CacheWriteBack);
     }
   }
 
