@@ -1215,12 +1215,18 @@ PciAcpiInitialization (
       PciWrite8 (PCI_LIB_ADDRESS (0, 0x1f, 0, 0x6a), 0x0b); // G
       PciWrite8 (PCI_LIB_ADDRESS (0, 0x1f, 0, 0x6b), 0x0b); // H
       break;
+    case ACRN_HOSTBRIDGE_DEVICE_ID:
+      //
+      // PCI_INTERRUPT_LINE is already initialized
+      //
+      // Set ACPI SCI_EN bit in PMCNTRL using SMI command
+      //
+      IoWrite8 (0xb2, 0xa0);
+      return;
     default:
       DEBUG ((EFI_D_ERROR, "%a: Unknown Host Bridge Device ID: 0x%04x\n",
         __FUNCTION__, mHostBridgeDevId));
-#if 0
       ASSERT (FALSE);
-#endif
       return;
   }
 

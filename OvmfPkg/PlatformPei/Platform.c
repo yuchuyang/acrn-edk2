@@ -429,16 +429,20 @@ MiscInitialization (
       AcpiCtlReg = POWER_MGMT_REGISTER_Q35 (ICH9_ACPI_CNTL);
       AcpiEnBit  = ICH9_ACPI_CNTL_ACPI_EN;
       break;
+    case ACRN_HOSTBRIDGE_DEVICE_ID:
+      break;
     default:
       DEBUG ((EFI_D_ERROR, "%a: Unknown Host Bridge Device ID: 0x%04x\n",
         __FUNCTION__, mHostBridgeDevId));
-#if 0
       ASSERT (FALSE);
-#endif
       return;
   }
   PcdStatus = PcdSet16S (PcdOvmfHostBridgePciDevId, mHostBridgeDevId);
   ASSERT_RETURN_ERROR (PcdStatus);
+
+  if (mHostBridgeDevId == ACRN_HOSTBRIDGE_DEVICE_ID) {
+    return;
+  }
 
   //
   // If the appropriate IOspace enable bit is set, assume the ACPI PMBA
