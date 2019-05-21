@@ -1430,7 +1430,7 @@ PlatformBdsConnectSequence (
   }
 
   Status = ConnectDevicesFromQemu ();
-  if (RETURN_ERROR (Status)) {
+  if (RETURN_ERROR (Status) && mHostBridgeDevId != ACRN_HOSTBRIDGE_DEVICE_ID) {
     //
     // Just use the simple policy to connect all devices
     //
