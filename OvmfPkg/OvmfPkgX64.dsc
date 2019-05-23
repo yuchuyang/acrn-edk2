@@ -542,6 +542,7 @@
   gEfiMdeModulePkgTokenSpaceGuid.PcdFirmwareVendor|L"ARCN"
   gEfiMdePkgTokenSpaceGuid.PcdDefaultTerminalType|4
 
+  gPcAtChipsetPkgTokenSpaceGuid.PcdIsaAcpiCom2Enable|FALSE
   gPcAtChipsetPkgTokenSpaceGuid.PcdIsaAcpiFloppyAEnable|FALSE
   gPcAtChipsetPkgTokenSpaceGuid.PcdIsaAcpiFloppyBEnable|FALSE
 
