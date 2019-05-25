@@ -27,39 +27,6 @@ UINTN mDayOfMonth[] = { 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 CHAR16 mTimeZoneVariableName[] = L"RTC";
 
 /**
-  Compare the Hour, Minute and Second of the From time and the To time.
-
-  Only compare H/M/S in EFI_TIME and ignore other fields here.
-
-  @param From   the first time
-  @param To     the second time
-
-  @return  >0   The H/M/S of the From time is later than those of To time
-  @return  ==0  The H/M/S of the From time is same as those of To time
-  @return  <0   The H/M/S of the From time is earlier than those of To time
-**/
-INTN
-CompareHMS (
-  IN EFI_TIME   *From,
-  IN EFI_TIME   *To
-  );
-
-/**
-  To check if second date is later than first date within 24 hours.
-
-  @param  From   the first date
-  @param  To     the second date
-
-  @retval TRUE   From is previous to To within 24 hours.
-  @retval FALSE  From is later, or it is previous to To more than 24 hours.
-**/
-BOOLEAN
-IsWithinOneDay (
-  IN EFI_TIME   *From,
-  IN EFI_TIME   *To
-  );
-
-/**
   Read RTC content through its registers.
 
   @param  Address  Address offset of RTC. It is recommended to use macros such as
@@ -178,16 +145,6 @@ AcrnRtcGetTime (
     EfiAcquireLock (&Global->RtcLock);
   }
   //
-  // Wait for up to 0.1 seconds for the RTC to be updated
-  //
-  Status = RtcWaitToUpdate (PcdGet32 (PcdRealTimeClockUpdateTimeout));
-  if (EFI_ERROR (Status)) {
-      if (!EfiAtRuntime ()) {
-        EfiReleaseLock (&Global->RtcLock);
-      }
-    return Status;
-  }
-  //
   // Read Register B
   //
   RegisterB.Data = RtcRead (RTC_ADDRESS_REGISTER_B);
@@ -245,7 +202,7 @@ AcrnRtcGetTime (
 }
 
 /**
-  Sets the current local time and date information.
+  Sets the current local time and date information. This is not supported in Acrn.
 
   @param  Time                  A pointer to the current time.
   @param  Global                For global use inside this module.
@@ -261,120 +218,11 @@ AcrnRtcSetTime (
   IN ACRN_RTC_MODULE_GLOBALS   *Global
   )
 {
-  EFI_STATUS      Status;
-  EFI_TIME        RtcTime;
-  RTC_REGISTER_B  RegisterB;
-  UINT32          TimerVar;
-
-  if (Time == NULL) {
-    return EFI_INVALID_PARAMETER;
-  }
-  //
-  // Make sure that the time fields are valid
-  //
-  Status = RtcTimeFieldsValid (Time);
-  if (EFI_ERROR (Status)) {
-    return Status;
-  }
-
-  CopyMem (&RtcTime, Time, sizeof (EFI_TIME));
-
-  //
-  // Acquire RTC Lock to make access to RTC atomic
-  //
-  if (!EfiAtRuntime ()) {
-    EfiAcquireLock (&Global->RtcLock);
-  }
-  //
-  // Wait for up to 0.1 seconds for the RTC to be updated
-  //
-  Status = RtcWaitToUpdate (PcdGet32 (PcdRealTimeClockUpdateTimeout));
-  if (EFI_ERROR (Status)) {
-     if (!EfiAtRuntime ()) {
-       EfiReleaseLock (&Global->RtcLock);
-     }
-    return Status;
-  }
-
-  //
-  // Write timezone and daylight to RTC variable
-  //
-  if ((Time->TimeZone == EFI_UNSPECIFIED_TIMEZONE) && (Time->Daylight == 0)) {
-    Status = EfiSetVariable (
-               mTimeZoneVariableName,
-               &gEfiCallerIdGuid,
-               0,
-               0,
-               NULL
-               );
-    if (Status == EFI_NOT_FOUND) {
-      Status = EFI_SUCCESS;
-    }
-  } else {
-    TimerVar = Time->Daylight;
-    TimerVar = (UINT32) ((TimerVar << 16) | (UINT16)(Time->TimeZone));
-    Status = EfiSetVariable (
-               mTimeZoneVariableName,
-               &gEfiCallerIdGuid,
-               EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS | EFI_VARIABLE_NON_VOLATILE,
-               sizeof (TimerVar),
-               &TimerVar
-               );
-  }
-
-  if (EFI_ERROR (Status)) {
-    if (!EfiAtRuntime ()) {
-      EfiReleaseLock (&Global->RtcLock);
-    }
-    return EFI_DEVICE_ERROR;
-  }
-
-  //
-  // Read Register B, and inhibit updates of the RTC
-  //
-  RegisterB.Data      = RtcRead (RTC_ADDRESS_REGISTER_B);
-  RegisterB.Bits.Set  = 1;
-  RtcWrite (RTC_ADDRESS_REGISTER_B, RegisterB.Data);
-
-  //
-  // Store the century value to RTC before converting to BCD format.
-  //
-  if (Global->CenturyRtcAddress != 0) {
-    RtcWrite (Global->CenturyRtcAddress, DecimalToBcd8 ((UINT8) (RtcTime.Year / 100)));
-  }
-
-  ConvertEfiTimeToRtcTime (&RtcTime, RegisterB);
-
-  RtcWrite (RTC_ADDRESS_SECONDS, RtcTime.Second);
-  RtcWrite (RTC_ADDRESS_MINUTES, RtcTime.Minute);
-  RtcWrite (RTC_ADDRESS_HOURS, RtcTime.Hour);
-  RtcWrite (RTC_ADDRESS_DAY_OF_THE_MONTH, RtcTime.Day);
-  RtcWrite (RTC_ADDRESS_MONTH, RtcTime.Month);
-  RtcWrite (RTC_ADDRESS_YEAR, (UINT8) RtcTime.Year);
-
-  //
-  // Allow updates of the RTC registers
-  //
-  RegisterB.Bits.Set = 0;
-  RtcWrite (RTC_ADDRESS_REGISTER_B, RegisterB.Data);
-
-  //
-  // Release RTC Lock.
-  //
-  if (!EfiAtRuntime ()) {
-    EfiReleaseLock (&Global->RtcLock);
-  }
-  //
-  // Set the variable that contains the TimeZone and Daylight fields
-  //
-  Global->SavedTimeZone = Time->TimeZone;
-  Global->Daylight      = Time->Daylight;
-
-  return EFI_SUCCESS;
+  return EFI_UNSUPPORTED;
 }
 
 /**
-  Returns the current wakeup alarm clock setting.
+  Returns the current wakeup alarm clock setting. This is not supported in Acrn.
 
   @param  Enabled  Indicates if the alarm is currently enabled or disabled.
   @param  Pending  Indicates if the alarm signal is pending and requires acknowledgment.
@@ -397,99 +245,11 @@ AcrnRtcGetWakeupTime (
   IN  ACRN_RTC_MODULE_GLOBALS  *Global
   )
 {
-  EFI_STATUS      Status;
-  RTC_REGISTER_B  RegisterB;
-  RTC_REGISTER_C  RegisterC;
-  EFI_TIME        RtcTime;
-  UINTN           DataSize;
-
-  //
-  // Check parameters for null pointers
-  //
-  if ((Enabled == NULL) || (Pending == NULL) || (Time == NULL)) {
-    return EFI_INVALID_PARAMETER;
-
-  }
-  //
-  // Acquire RTC Lock to make access to RTC atomic
-  //
-  if (!EfiAtRuntime ()) {
-    EfiAcquireLock (&Global->RtcLock);
-  }
-  //
-  // Wait for up to 0.1 seconds for the RTC to be updated
-  //
-  Status = RtcWaitToUpdate (PcdGet32 (PcdRealTimeClockUpdateTimeout));
-  if (EFI_ERROR (Status)) {
-    if (!EfiAtRuntime ()) {
-    EfiReleaseLock (&Global->RtcLock);
-    }
-    return EFI_DEVICE_ERROR;
-  }
-  //
-  // Read Register B and Register C
-  //
-  RegisterB.Data  = RtcRead (RTC_ADDRESS_REGISTER_B);
-  RegisterC.Data  = RtcRead (RTC_ADDRESS_REGISTER_C);
-
-  //
-  // Get the Time/Date/Daylight Savings values.
-  //
-  *Enabled = RegisterB.Bits.Aie;
-  *Pending = RegisterC.Bits.Af;
-
-  Time->Second = RtcRead (RTC_ADDRESS_SECONDS_ALARM);
-  Time->Minute = RtcRead (RTC_ADDRESS_MINUTES_ALARM);
-  Time->Hour   = RtcRead (RTC_ADDRESS_HOURS_ALARM);
-  Time->Day    = RtcRead (RTC_ADDRESS_DAY_OF_THE_MONTH);
-  Time->Month  = RtcRead (RTC_ADDRESS_MONTH);
-  Time->Year   = RtcRead (RTC_ADDRESS_YEAR);
-  Time->TimeZone = Global->SavedTimeZone;
-  Time->Daylight = Global->Daylight;
-
-  //
-  // Get the alarm info from variable
-  //
-  DataSize = sizeof (EFI_TIME);
-  Status = EfiGetVariable (
-              L"RTCALARM",
-              &gEfiCallerIdGuid,
-              NULL,
-              &DataSize,
-              &RtcTime
-              );
-  if (!EFI_ERROR (Status)) {
-    //
-    // The alarm variable exists. In this case, we read variable to get info.
-    //
-    Time->Day   = RtcTime.Day;
-    Time->Month = RtcTime.Month;
-    Time->Year  = RtcTime.Year;
-  }
-
-  //
-  // Release RTC Lock.
-  //
-  if (!EfiAtRuntime ()) {
-    EfiReleaseLock (&Global->RtcLock);
-  }
-
-  //
-  // Make sure all field values are in correct range
-  //
-  Status = ConvertRtcTimeToEfiTime (Time, RegisterB);
-  if (!EFI_ERROR (Status)) {
-    Status = RtcTimeFieldsValid (Time);
-  }
-  if (EFI_ERROR (Status)) {
-    return EFI_DEVICE_ERROR;
-  }
-
-  return EFI_SUCCESS;
+  return EFI_UNSUPPORTED;
 }
 
 /**
-  Sets the system wakeup alarm clock time.
+  Sets the system wakeup alarm clock time. This is not supported in Acrn.
 
   @param  Enabled  Enable or disable the wakeup alarm.
   @param  Time     If Enable is TRUE, the time to set the wakeup alarm for.
@@ -510,128 +270,7 @@ AcrnRtcSetWakeupTime (
   IN ACRN_RTC_MODULE_GLOBALS  *Global
   )
 {
-  EFI_STATUS            Status;
-  EFI_TIME              RtcTime;
-  RTC_REGISTER_B        RegisterB;
-  EFI_TIME_CAPABILITIES Capabilities;
-
-  ZeroMem (&RtcTime, sizeof (RtcTime));
-
-  if (Enable) {
-
-    if (Time == NULL) {
-      return EFI_INVALID_PARAMETER;
-    }
-    //
-    // Make sure that the time fields are valid
-    //
-    Status = RtcTimeFieldsValid (Time);
-    if (EFI_ERROR (Status)) {
-      return EFI_INVALID_PARAMETER;
-    }
-    //
-    // Just support set alarm time within 24 hours
-    //
-    AcrnRtcGetTime (&RtcTime, &Capabilities, Global);
-    Status = RtcTimeFieldsValid (&RtcTime);
-    if (EFI_ERROR (Status)) {
-      return EFI_DEVICE_ERROR;
-    }
-    if (!IsWithinOneDay (&RtcTime, Time)) {
-      return EFI_UNSUPPORTED;
-    }
-    //
-    // Make a local copy of the time and date
-    //
-    CopyMem (&RtcTime, Time, sizeof (EFI_TIME));
-
-  }
-  //
-  // Acquire RTC Lock to make access to RTC atomic
-  //
-  if (!EfiAtRuntime ()) {
-    EfiAcquireLock (&Global->RtcLock);
-  }
-  //
-  // Wait for up to 0.1 seconds for the RTC to be updated
-  //
-  Status = RtcWaitToUpdate (PcdGet32 (PcdRealTimeClockUpdateTimeout));
-  if (EFI_ERROR (Status)) {
-    if (!EfiAtRuntime ()) {
-    EfiReleaseLock (&Global->RtcLock);
-    }
-    return EFI_DEVICE_ERROR;
-  }
-  //
-  // Read Register B
-  //
-  RegisterB.Data = RtcRead (RTC_ADDRESS_REGISTER_B);
-
-  if (Enable) {
-    ConvertEfiTimeToRtcTime (&RtcTime, RegisterB);
-  } else {
-    //
-    // if the alarm is disable, record the current setting.
-    //
-    RtcTime.Second  = RtcRead (RTC_ADDRESS_SECONDS_ALARM);
-    RtcTime.Minute  = RtcRead (RTC_ADDRESS_MINUTES_ALARM);
-    RtcTime.Hour    = RtcRead (RTC_ADDRESS_HOURS_ALARM);
-    RtcTime.Day     = RtcRead (RTC_ADDRESS_DAY_OF_THE_MONTH);
-    RtcTime.Month   = RtcRead (RTC_ADDRESS_MONTH);
-    RtcTime.Year    = RtcRead (RTC_ADDRESS_YEAR);
-    RtcTime.TimeZone = Global->SavedTimeZone;
-    RtcTime.Daylight = Global->Daylight;
-  }
-
-  //
-  // Set the Y/M/D info to variable as it has no corresponding hw registers.
-  //
-  Status =  EfiSetVariable (
-              L"RTCALARM",
-              &gEfiCallerIdGuid,
-              EFI_VARIABLE_BOOTSERVICE_ACCESS | EFI_VARIABLE_RUNTIME_ACCESS | EFI_VARIABLE_NON_VOLATILE,
-              sizeof (RtcTime),
-              &RtcTime
-              );
-  if (EFI_ERROR (Status)) {
-    if (!EfiAtRuntime ()) {
-      EfiReleaseLock (&Global->RtcLock);
-    }
-    return EFI_DEVICE_ERROR;
-  }
-
-  //
-  // Inhibit updates of the RTC
-  //
-  RegisterB.Bits.Set  = 1;
-  RtcWrite (RTC_ADDRESS_REGISTER_B, RegisterB.Data);
-
-  if (Enable) {
-    //
-    // Set RTC alarm time
-    //
-    RtcWrite (RTC_ADDRESS_SECONDS_ALARM, RtcTime.Second);
-    RtcWrite (RTC_ADDRESS_MINUTES_ALARM, RtcTime.Minute);
-    RtcWrite (RTC_ADDRESS_HOURS_ALARM, RtcTime.Hour);
-
-    RegisterB.Bits.Aie = 1;
-
-  } else {
-    RegisterB.Bits.Aie = 0;
-  }
-  //
-  // Allow updates of the RTC registers
-  //
-  RegisterB.Bits.Set = 0;
-  RtcWrite (RTC_ADDRESS_REGISTER_B, RegisterB.Data);
-
-  //
-  // Release RTC Lock.
-  //
-  if (!EfiAtRuntime ()) {
-    EfiReleaseLock (&Global->RtcLock);
-  }
-  return EFI_SUCCESS;
+  return EFI_UNSUPPORTED;
 }
 
 
@@ -733,27 +372,6 @@ ConvertRtcTimeToEfiTime (
 
   Time->Nanosecond  = 0;
 
-  return EFI_SUCCESS;
-}
-
-/**
-  Wait for a period for the RTC to be ready.
-
-  @param    Timeout  Tell how long it should take to wait.
-
-  @retval   EFI_DEVICE_ERROR   RTC device error.
-  @retval   EFI_SUCCESS        RTC is updated and ready.
-**/
-EFI_STATUS
-RtcWaitToUpdate (
-  UINTN Timeout
-  )
-{
-  //
-  // The RegisterA.Bits.Uip and RegideterD.Bits.Vrt should be
-  // checked and handled by hypervisor, there is no need to
-  // check if the RTC is ready inside OVMF.
-  // 
   return EFI_SUCCESS;
 }
 
