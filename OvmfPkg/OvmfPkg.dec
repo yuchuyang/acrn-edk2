@@ -64,7 +64,7 @@
 
   ##  @libraryclass  Access bhyve's firmware control interface
   #
-  BhyveFwCtlLib|Include/Library/BhyveFwCtlLib.h
+  #BhyveFwCtlLib|Include/Library/BhyveFwCtlLib.h
 
   ##  @libraryclass  Invoke Xen hypercalls
   #
