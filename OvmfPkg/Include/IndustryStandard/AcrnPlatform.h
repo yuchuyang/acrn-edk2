@@ -18,4 +18,9 @@
 //
 #define ACRN_HOSTBRIDGE_DEVICE_ID 0x1275
 
+//
+// Values we program into the PM base address registers
+//
+#define ACRN_PMBASE_VALUE 0x400
+
 #endif
