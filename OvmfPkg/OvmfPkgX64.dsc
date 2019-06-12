@@ -946,9 +946,9 @@
   # Variable driver stack (non-SMM)
   #
   #OvmfPkg/QemuFlashFvbServicesRuntimeDxe/FvbServicesRuntimeDxe.inf
-  OvmfPkg/EmuVariableFvbRuntimeDxe/Fvb.inf {
+  OvmfPkg/AcrnEmuVariableFvbRuntimeDxe/Fvb.inf {
     <LibraryClasses>
-      PlatformFvbLib|OvmfPkg/Library/EmuVariableFvbLib/EmuVariableFvbLib.inf
+      PlatformFvbLib|OvmfPkg/Library/PlatformFvbLibNull/PlatformFvbLibNull.inf
   }
   MdeModulePkg/Universal/FaultTolerantWriteDxe/FaultTolerantWriteDxe.inf
   MdeModulePkg/Universal/Variable/RuntimeDxe/VariableRuntimeDxe.inf {

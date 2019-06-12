@@ -1430,12 +1430,20 @@ PlatformBdsConnectSequence (
   }
 
   Status = ConnectDevicesFromQemu ();
-  if (RETURN_ERROR (Status) && mHostBridgeDevId != ACRN_HOSTBRIDGE_DEVICE_ID) {
-    //
-    // Just use the simple policy to connect all devices
-    //
-    DEBUG ((DEBUG_INFO, "EfiBootManagerConnectAll\n"));
-    EfiBootManagerConnectAll ();
+  if (RETURN_ERROR (Status)) {
+    if (mHostBridgeDevId != ACRN_HOSTBRIDGE_DEVICE_ID) {
+      //
+      // Just use the simple policy to connect all devices
+      //
+      DEBUG ((DEBUG_INFO, "EfiBootManagerConnectAll\n"));
+      EfiBootManagerConnectAll ();
+    } else if (PcdGetBool (PcdOvmfFlashVariablesEnable)) {
+      //
+      // On ACRN, only PCI mass storage devices need to be connected
+      //
+      DEBUG ((DEBUG_INFO, "ConnectRecursivelyIfPciMassStorage\n"));
+      VisitAllPciInstances (ConnectRecursivelyIfPciMassStorage);
+    }
   }
 }
 
