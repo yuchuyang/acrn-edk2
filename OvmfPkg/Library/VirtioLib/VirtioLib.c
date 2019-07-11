@@ -316,9 +316,11 @@ VirtioFlush (
   // OK.
   //
   MemoryFence();
-  Status = VirtIo->SetQueueNotify (VirtIo, VirtQueueId);
-  if (EFI_ERROR (Status)) {
-    return Status;
+  if ((*Ring->Used.Flags & (UINT16) VRING_USED_F_NO_NOTIFY) == 0) {
+    Status = VirtIo->SetQueueNotify (VirtIo, VirtQueueId);
+    if (EFI_ERROR (Status)) {
+      return Status;
+    }
   }
 
   //

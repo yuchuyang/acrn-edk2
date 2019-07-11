@@ -441,10 +441,12 @@ VirtioNetInitRx (
   // virtio-0.9.5, 2.4.1.4 Notifying the Device
   //
   MemoryFence ();
-  Status = Dev->VirtIo->SetQueueNotify (Dev->VirtIo, VIRTIO_NET_Q_RX);
-  if (EFI_ERROR (Status)) {
-    Dev->VirtIo->SetDeviceStatus (Dev->VirtIo, 0);
-    goto UnmapSharedBuffer;
+  if ((*Dev->RxRing.Used.Flags & (UINT16) VRING_USED_F_NO_NOTIFY) == 0) {
+    Status = Dev->VirtIo->SetQueueNotify (Dev->VirtIo, VIRTIO_NET_Q_RX);
+    if (EFI_ERROR (Status)) {
+      Dev->VirtIo->SetDeviceStatus (Dev->VirtIo, 0);
+      goto UnmapSharedBuffer;
+    }
   }
 
   return Status;

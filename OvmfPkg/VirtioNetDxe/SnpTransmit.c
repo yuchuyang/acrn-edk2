@@ -176,7 +176,9 @@ VirtioNetTransmit (
   *Dev->TxRing.Avail.Idx = AvailIdx;
 
   MemoryFence ();
-  Status = Dev->VirtIo->SetQueueNotify (Dev->VirtIo, VIRTIO_NET_Q_TX);
+  if ((*Dev->TxRing.Used.Flags & (UINT16) VRING_USED_F_NO_NOTIFY) == 0) {
+    Status = Dev->VirtIo->SetQueueNotify (Dev->VirtIo, VIRTIO_NET_Q_TX);
+  }
 
 Exit:
   gBS->RestoreTPL (OldTpl);

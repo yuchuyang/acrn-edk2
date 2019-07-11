@@ -180,9 +180,11 @@ RecycleDesc:
   *Dev->RxRing.Avail.Idx = AvailIdx;
 
   MemoryFence ();
-  NotifyStatus = Dev->VirtIo->SetQueueNotify (Dev->VirtIo, VIRTIO_NET_Q_RX);
-  if (!EFI_ERROR (Status)) { // earlier error takes precedence
-    Status = NotifyStatus;
+  if ((*Dev->RxRing.Used.Flags & (UINT16) VRING_USED_F_NO_NOTIFY) == 0) {
+    NotifyStatus = Dev->VirtIo->SetQueueNotify (Dev->VirtIo, VIRTIO_NET_Q_RX);
+    if (!EFI_ERROR (Status)) { // earlier error takes precedence
+      Status = NotifyStatus;
+    }
   }
 
 Exit:
