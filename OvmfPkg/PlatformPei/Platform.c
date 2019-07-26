@@ -24,7 +24,6 @@
 //
 #include <Library/BaseLib.h>
 #include <Library/DebugLib.h>
-#include <Library/BaseMemoryLib.h>
 #include <Library/HobLib.h>
 #include <Library/IoLib.h>
 #include <Library/MemoryAllocationLib.h>
@@ -528,7 +527,6 @@ VOID
 ReserveEmuVariableNvStore (
   )
 {
-  UINT32               NvStorageTotalSize;
   EFI_PHYSICAL_ADDRESS VariableStore;
   RETURN_STATUS        PcdStatus;
 
@@ -538,27 +536,18 @@ ReserveEmuVariableNvStore (
   // across reboots, this allows the NV variable storage to survive
   // a VM reboot.
   //
-  NvStorageTotalSize = 2 * PcdGet32 (PcdFlashNvStorageFtwSpareSize);
   VariableStore =
     (EFI_PHYSICAL_ADDRESS)(UINTN)
-      AllocateRuntimePages (EFI_SIZE_TO_PAGES (NvStorageTotalSize));
+      AllocateRuntimePages (
+        EFI_SIZE_TO_PAGES (2 * PcdGet32 (PcdFlashNvStorageFtwSpareSize))
+        );
   DEBUG ((EFI_D_INFO,
           "Reserved variable store memory: 0x%lX; size: %dkb\n",
-          VariableStore, NvStorageTotalSize / 1024
+          VariableStore,
+          (2 * PcdGet32 (PcdFlashNvStorageFtwSpareSize)) / 1024
         ));
   PcdStatus = PcdSet64S (PcdEmuVariableNvStoreReserved, VariableStore);
   ASSERT_RETURN_ERROR (PcdStatus);
-
-  if (mHostBridgeDevId == ACRN_HOSTBRIDGE_DEVICE_ID && VariableStore) {
-    //
-    // Don't bother copying the spare area.
-    //
-    CopyMem (
-      (VOID *) VariableStore,
-      (VOID *)(UINTN) PcdGet32 (PcdOvmfFlashNvStorageVariableBase),
-      NvStorageTotalSize / 2
-      );
-  }
 }
 
 

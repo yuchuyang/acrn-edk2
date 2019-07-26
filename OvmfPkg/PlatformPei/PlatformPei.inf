@@ -114,7 +114,6 @@
 
 [FixedPcd]
   gEfiMdePkgTokenSpaceGuid.PcdPciExpressBaseAddress
-  gUefiOvmfPkgTokenSpaceGuid.PcdOvmfFlashNvStorageVariableBase
 
 [FeaturePcd]
   gUefiOvmfPkgTokenSpaceGuid.PcdSmmSmramRequire
