@@ -1,3 +1,5 @@
+Note: acrn-edk2 repo here is a fork of EDK II (https://github.com/tianocore/edk2), ACRN uses one of its sub component, OvmfPkg as virtual bootloader.
+
 # EDK II Project
 
 A modern, feature-rich, cross-platform firmware development environment
