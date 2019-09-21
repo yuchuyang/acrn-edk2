@@ -346,6 +346,7 @@ INF  RuleOverride = BINARY EdkShellBinPkg/FullShell/FullShell.inf
 #INF  MdeModulePkg/Bus/Usb/UsbBusDxe/UsbBusDxe.inf
 #INF  MdeModulePkg/Bus/Usb/UsbKbDxe/UsbKbDxe.inf
 #INF  MdeModulePkg/Bus/Usb/UsbMassStorageDxe/UsbMassStorageDxe.inf
+INF  OvmfPkg/AcrnUsbDeviceDxe/AcrnUsbDeviceDxe.inf
 
 !ifdef $(CSM_ENABLE)
 INF  IntelFrameworkModulePkg/Csm/BiosThunk/VideoDxe/VideoDxe.inf
