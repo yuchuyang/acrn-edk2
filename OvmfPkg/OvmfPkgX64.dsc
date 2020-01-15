@@ -81,9 +81,9 @@
   INTEL:*_*_*_CC_FLAGS = /D DISABLE_NEW_DEPRECATED_INTERFACES
   GCC:*_*_*_CC_FLAGS = -D DISABLE_NEW_DEPRECATED_INTERFACES
 
-[BuildOptions.X64]
-  GCC:*_*_*_CC_FLAGS = -fno-delete-null-pointer-checks -fwrapv
-  GCC:*_*_*_DLINK_FLAGS = -z noexecstack
+  GCC:*_GCC5_X64_CC_FLAGS = -fno-delete-null-pointer-checks -fwrapv -fstack-protector-strong -mstack-protector-guard=global
+  GCC:*_GCC5_X64_DLINK_FLAGS = -z noexecstack -L$(WORKSPACE)/OvmfPkg/Library/GccLto -llto-x64 -Wl,-plugin-opt=-pass-through=-llto-x64
+  GCC:*_GCC5_X64_ASLCC_FLAGS = -fno-stack-protector
 
 [BuildOptions.common.EDKII.DXE_RUNTIME_DRIVER]
   GCC:*_*_*_DLINK_FLAGS = -z common-page-size=0x1000
@@ -250,6 +250,7 @@
   CpuExceptionHandlerLib|UefiCpuPkg/Library/CpuExceptionHandlerLib/SecPeiCpuExceptionHandlerLib.inf
 
 [LibraryClasses.common.PEI_CORE]
+  NULL|MdePkg/Library/BaseStackCheckLib/BaseStackCheckLib.inf
   HobLib|MdePkg/Library/PeiHobLib/PeiHobLib.inf
   PeiServicesTablePointerLib|MdePkg/Library/PeiServicesTablePointerLibIdt/PeiServicesTablePointerLibIdt.inf
   PeiServicesLib|MdePkg/Library/PeiServicesLib/PeiServicesLib.inf
@@ -266,6 +267,7 @@
   PeCoffLib|MdePkg/Library/BasePeCoffLib/BasePeCoffLib.inf
 
 [LibraryClasses.common.PEIM]
+  NULL|MdePkg/Library/BaseStackCheckLib/BaseStackCheckLib.inf
   HobLib|MdePkg/Library/PeiHobLib/PeiHobLib.inf
   PeiServicesTablePointerLib|MdePkg/Library/PeiServicesTablePointerLibIdt/PeiServicesTablePointerLibIdt.inf
   PeiServicesLib|MdePkg/Library/PeiServicesLib/PeiServicesLib.inf
@@ -297,6 +299,7 @@
 !endif
 
 [LibraryClasses.common.DXE_CORE]
+  NULL|MdePkg/Library/BaseStackCheckLib/BaseStackCheckLib.inf
   HobLib|MdePkg/Library/DxeCoreHobLib/DxeCoreHobLib.inf
   DxeCoreEntryPoint|MdePkg/Library/DxeCoreEntryPoint/DxeCoreEntryPoint.inf
   MemoryAllocationLib|MdeModulePkg/Library/DxeCoreMemoryAllocationLib/DxeCoreMemoryAllocationLib.inf
@@ -314,6 +317,7 @@
   PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
 
 [LibraryClasses.common.DXE_RUNTIME_DRIVER]
+  NULL|MdePkg/Library/BaseStackCheckLib/BaseStackCheckLib.inf
   PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
   #TimerLib|OvmfPkg/Library/AcpiTimerLib/DxeAcpiTimerLib.inf
   TimerLib|UefiCpuPkg/Library/SecPeiDxeTimerLibUefiCpu/SecPeiDxeTimerLibUefiCpu.inf
@@ -332,6 +336,7 @@
   QemuFwCfgS3Lib|OvmfPkg/Library/QemuFwCfgS3Lib/BaseQemuFwCfgS3LibNull.inf
 
 [LibraryClasses.common.UEFI_DRIVER]
+  NULL|MdePkg/Library/BaseStackCheckLib/BaseStackCheckLib.inf
   PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
   #TimerLib|OvmfPkg/Library/AcpiTimerLib/DxeAcpiTimerLib.inf
   TimerLib|UefiCpuPkg/Library/SecPeiDxeTimerLibUefiCpu/SecPeiDxeTimerLibUefiCpu.inf
@@ -348,6 +353,7 @@
   #PciLib|OvmfPkg/Library/DxePciLibI440FxQ35/DxePciLibI440FxQ35.inf
 
 [LibraryClasses.common.DXE_DRIVER]
+  NULL|MdePkg/Library/BaseStackCheckLib/BaseStackCheckLib.inf
   PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
   #TimerLib|OvmfPkg/Library/AcpiTimerLib/DxeAcpiTimerLib.inf
   TimerLib|UefiCpuPkg/Library/SecPeiDxeTimerLibUefiCpu/SecPeiDxeTimerLibUefiCpu.inf
@@ -628,6 +634,7 @@
   #
   OvmfPkg/Sec/SecMain.inf {
     <LibraryClasses>
+      NULL|MdePkg/Library/BaseStackCheckLib/BaseStackCheckLib.inf
       NULL|MdeModulePkg/Library/LzmaCustomDecompressLib/LzmaCustomDecompressLib.inf
   }
 
@@ -731,6 +738,7 @@
   #MdeModulePkg/Logo/LogoDxe.inf
   MdeModulePkg/Application/UiApp/UiApp.inf {
     <LibraryClasses>
+      NULL|MdePkg/Library/BaseStackCheckLib/BaseStackCheckLib.inf
       NULL|MdeModulePkg/Library/DeviceManagerUiLib/DeviceManagerUiLib.inf
       NULL|MdeModulePkg/Library/BootManagerUiLib/BootManagerUiLib.inf
       NULL|MdeModulePkg/Library/BootMaintenanceManagerUiLib/BootMaintenanceManagerUiLib.inf
@@ -875,6 +883,7 @@
   #}
   ShellPkg/Application/Shell/Shell.inf {
     <LibraryClasses>
+      NULL|MdePkg/Library/BaseStackCheckLib/BaseStackCheckLib.inf
       ShellCommandLib|ShellPkg/Library/UefiShellCommandLib/UefiShellCommandLib.inf
       NULL|ShellPkg/Library/UefiShellLevel2CommandsLib/UefiShellLevel2CommandsLib.inf
       NULL|ShellPkg/Library/UefiShellLevel1CommandsLib/UefiShellLevel1CommandsLib.inf
