@@ -365,7 +365,9 @@ FvbProtocolEraseBlocks (
     ErasePtr += (UINTN)StartingLba * FvbDevice->BlockSize;
     EraseSize = NumOfLba * FvbDevice->BlockSize;
 
+    MemoryFence ();
     SetMem (ErasePtr, EraseSize, ERASED_UINT8);
+    MemoryFence ();
   } while (1);
   VA_END (Args);
 
@@ -844,7 +846,9 @@ FvbInitialize (
   // Initialize the main FV header and variable store header
   //
   if (Initialize) {
+    MemoryFence ();
     SetMem (Ptr, EMU_FVB_SIZE, ERASED_UINT8);
+    MemoryFence ();
     InitializeFvAndVariableStoreHeaders (Ptr);
   }
 
