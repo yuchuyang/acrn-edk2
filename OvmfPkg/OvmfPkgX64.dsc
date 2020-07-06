@@ -111,7 +111,7 @@
 [LibraryClasses]
   PcdLib|MdePkg/Library/BasePcdLibNull/BasePcdLibNull.inf
   #TimerLib|OvmfPkg/Library/AcpiTimerLib/BaseAcpiTimerLib.inf
-  TimerLib|UefiCpuPkg/Library/SecPeiDxeTimerLibUefiCpu/SecPeiDxeTimerLibUefiCpu.inf
+  TimerLib|OvmfPkg/Library/AcrnTscTimerLib/AcrnTscTimerLib.inf
   PrintLib|MdePkg/Library/BasePrintLib/BasePrintLib.inf
   BaseMemoryLib|MdePkg/Library/BaseMemoryLibRepStr/BaseMemoryLibRepStr.inf
   BaseLib|MdePkg/Library/BaseLib/BaseLib.inf
@@ -231,7 +231,7 @@
 
 [LibraryClasses.common.SEC]
   #TimerLib|OvmfPkg/Library/AcpiTimerLib/BaseRomAcpiTimerLib.inf
-  TimerLib|UefiCpuPkg/Library/SecPeiDxeTimerLibUefiCpu/SecPeiDxeTimerLibUefiCpu.inf
+  TimerLib|OvmfPkg/Library/AcrnTscTimerLib/AcrnTscTimerLib.inf
   QemuFwCfgLib|OvmfPkg/Library/QemuFwCfgLib/QemuFwCfgLibNull.inf
 !ifdef $(DEBUG_ON_SERIAL_PORT)
   DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
@@ -320,7 +320,7 @@
   NULL|MdePkg/Library/BaseStackCheckLib/BaseStackCheckLib.inf
   PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
   #TimerLib|OvmfPkg/Library/AcpiTimerLib/DxeAcpiTimerLib.inf
-  TimerLib|UefiCpuPkg/Library/SecPeiDxeTimerLibUefiCpu/SecPeiDxeTimerLibUefiCpu.inf
+  TimerLib|OvmfPkg/Library/AcrnTscTimerLib/AcrnTscTimerLib.inf
   HobLib|MdePkg/Library/DxeHobLib/DxeHobLib.inf
   DxeCoreEntryPoint|MdePkg/Library/DxeCoreEntryPoint/DxeCoreEntryPoint.inf
   MemoryAllocationLib|MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf
@@ -339,7 +339,7 @@
   NULL|MdePkg/Library/BaseStackCheckLib/BaseStackCheckLib.inf
   PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
   #TimerLib|OvmfPkg/Library/AcpiTimerLib/DxeAcpiTimerLib.inf
-  TimerLib|UefiCpuPkg/Library/SecPeiDxeTimerLibUefiCpu/SecPeiDxeTimerLibUefiCpu.inf
+  TimerLib|OvmfPkg/Library/AcrnTscTimerLib/AcrnTscTimerLib.inf
   HobLib|MdePkg/Library/DxeHobLib/DxeHobLib.inf
   DxeCoreEntryPoint|MdePkg/Library/DxeCoreEntryPoint/DxeCoreEntryPoint.inf
   MemoryAllocationLib|MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf
@@ -356,7 +356,7 @@
   NULL|MdePkg/Library/BaseStackCheckLib/BaseStackCheckLib.inf
   PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
   #TimerLib|OvmfPkg/Library/AcpiTimerLib/DxeAcpiTimerLib.inf
-  TimerLib|UefiCpuPkg/Library/SecPeiDxeTimerLibUefiCpu/SecPeiDxeTimerLibUefiCpu.inf
+  TimerLib|OvmfPkg/Library/AcrnTscTimerLib/AcrnTscTimerLib.inf
   HobLib|MdePkg/Library/DxeHobLib/DxeHobLib.inf
   MemoryAllocationLib|MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf
   ReportStatusCodeLib|MdeModulePkg/Library/DxeReportStatusCodeLib/DxeReportStatusCodeLib.inf
@@ -391,7 +391,7 @@
 [LibraryClasses.common.UEFI_APPLICATION]
   PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
   #TimerLib|OvmfPkg/Library/AcpiTimerLib/DxeAcpiTimerLib.inf
-  TimerLib|UefiCpuPkg/Library/SecPeiDxeTimerLibUefiCpu/SecPeiDxeTimerLibUefiCpu.inf
+  TimerLib|OvmfPkg/Library/AcrnTscTimerLib/AcrnTscTimerLib.inf
   HobLib|MdePkg/Library/DxeHobLib/DxeHobLib.inf
   MemoryAllocationLib|MdePkg/Library/UefiMemoryAllocationLib/UefiMemoryAllocationLib.inf
   ReportStatusCodeLib|MdeModulePkg/Library/DxeReportStatusCodeLib/DxeReportStatusCodeLib.inf
@@ -405,7 +405,7 @@
 [LibraryClasses.common.DXE_SMM_DRIVER]
   PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
   #TimerLib|OvmfPkg/Library/AcpiTimerLib/DxeAcpiTimerLib.inf
-  TimerLib|UefiCpuPkg/Library/SecPeiDxeTimerLibUefiCpu/SecPeiDxeTimerLibUefiCpu.inf
+  TimerLib|OvmfPkg/Library/AcrnTscTimerLib/AcrnTscTimerLib.inf
   MemoryAllocationLib|MdePkg/Library/SmmMemoryAllocationLib/SmmMemoryAllocationLib.inf
   ReportStatusCodeLib|MdeModulePkg/Library/DxeReportStatusCodeLib/DxeReportStatusCodeLib.inf
   HobLib|MdePkg/Library/DxeHobLib/DxeHobLib.inf
@@ -426,7 +426,7 @@
 [LibraryClasses.common.SMM_CORE]
   PcdLib|MdePkg/Library/DxePcdLib/DxePcdLib.inf
   #TimerLib|OvmfPkg/Library/AcpiTimerLib/DxeAcpiTimerLib.inf
-  TimerLib|UefiCpuPkg/Library/SecPeiDxeTimerLibUefiCpu/SecPeiDxeTimerLibUefiCpu.inf
+  TimerLib|OvmfPkg/Library/AcrnTscTimerLib/AcrnTscTimerLib.inf
   SmmCorePlatformHookLib|MdeModulePkg/Library/SmmCorePlatformHookLibNull/SmmCorePlatformHookLibNull.inf
   MemoryAllocationLib|MdeModulePkg/Library/PiSmmCoreMemoryAllocationLib/PiSmmCoreMemoryAllocationLib.inf
   ReportStatusCodeLib|MdeModulePkg/Library/DxeReportStatusCodeLib/DxeReportStatusCodeLib.inf
