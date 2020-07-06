@@ -1,0 +1,54 @@
+## @file
+# Timer Architectural Protocol module using Local Advanced Programmable Interrupt
+# Controller (LAPIC) Timer.
+#
+# Copyright (c) 2011 - 2020, Intel Corporation. All rights reserved.<BR>
+# This program and the accompanying materials
+# are licensed and made available under the terms and conditions of the BSD License
+# which accompanies this distribution.  The full text of the license may be found at
+# http://opensource.org/licenses/bsd-license.php
+#
+# THE PROGRAM IS DISTRIBUTED UNDER THE BSD LICENSE ON AN "AS IS" BASIS,
+# WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
+#
+##
+
+[Defines]
+  INF_VERSION                    = 0x00010005
+  BASE_NAME                      = AcrnLapicTimerDxe
+  FILE_GUID                      = A7D023B1-B02A-4EBE-A801-D2F2630CF807
+  MODULE_TYPE                    = DXE_DRIVER
+  VERSION_STRING                 = 1.0
+  ENTRY_POINT                    = TimerDriverInitialize
+
+#
+# The following information is for reference only and not required by the build tools.
+#
+#  VALID_ARCHITECTURES           = IA32 X64
+#
+
+[Sources]
+  AcrnLapicTimer.c
+
+[Packages]
+  MdePkg/MdePkg.dec
+  UefiCpuPkg/UefiCpuPkg.dec
+
+[LibraryClasses]
+  PcdLib
+  IoLib
+  DebugLib
+  UefiDriverEntryPoint
+  UefiBootServicesTableLib
+  BaseLib
+  LocalApicLib
+
+[Protocols]
+  gEfiTimerArchProtocolGuid                     ## PRODUCES
+  gEfiCpuArchProtocolGuid                       ## CONSUMES
+
+[Pcd]
+  gEfiMdePkgTokenSpaceGuid.PcdFSBClock                      ## SOMETIMES_CONSUMES
+
+[Depex]
+  gEfiCpuArchProtocolGuid
