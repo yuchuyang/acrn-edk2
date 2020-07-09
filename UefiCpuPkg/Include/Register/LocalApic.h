@@ -1,7 +1,7 @@
 /** @file
   IA32 Local APIC Definitions.
 
-  Copyright (c) 2010 - 2016, Intel Corporation. All rights reserved.<BR>
+  Copyright (c) 2010 - 2020, Intel Corporation. All rights reserved.<BR>
   This program and the accompanying materials
   are licensed and made available under the terms and conditions of the BSD License
   which accompanies this distribution.  The full text of the license may be found at
@@ -130,8 +130,8 @@ typedef union {
     UINT32  DeliveryStatus:1;  ///< 0: Idle, 1: send pending.
     UINT32  Reserved1:3;       ///< Reserved.
     UINT32  Mask:1;            ///< 0: Not masked, 1: Masked.
-    UINT32  TimerMode:1;       ///< 0: One-shot, 1: Periodic.
-    UINT32  Reserved2:14;      ///< Reserved.
+    UINT32  TimerMode:2;       ///< 0: One-shot, 1: Periodic, 2: TSC-deadline.
+    UINT32  Reserved2:13;      ///< Reserved.
   } Bits;
   UINT32    Uint32;
 } LOCAL_APIC_LVT_TIMER;
