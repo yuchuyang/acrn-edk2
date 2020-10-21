@@ -198,13 +198,6 @@ AcrnPublishRamRegions (
 
   for (Loop = 0, Entry = &E820->E820Map[Loop]; Loop < E820->E820EntriesCount;
        Entry = &E820->E820Map[++Loop]) {
-
-    /*WA: For PTCM */
-    if ((Entry->Type == EfiAcpiAddressRangeReserved) && (Entry->BaseAddr == 0x40080000UL)) {
-      AddReservedMemoryBaseSizeHob(Entry->BaseAddr, Entry->Length, 0);
-      continue;
-    }
-
     //
     // Only care about RAM
     //
