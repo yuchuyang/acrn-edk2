@@ -47,7 +47,7 @@ E820IsValid (
 
 RETURN_STATUS
 AcrnGetSystemMemorySizeBelow4gb (
-  OUT  UINT32               *MemSize OPTIONAL
+  OUT  UINT32               *MemSize
   )
 {
   ACRN_E820_INFO    *E820;
@@ -78,7 +78,7 @@ AcrnGetSystemMemorySizeBelow4gb (
 
 RETURN_STATUS
 AcrnGetSystemMemorySizeAbove4gb (
-  OUT  UINT64               *MemSize OPTIONAL
+  OUT  UINT64               *MemSize
   )
 {
   ACRN_E820_INFO    *E820;
@@ -111,7 +111,7 @@ AcrnGetSystemMemorySizeAbove4gb (
 
 RETURN_STATUS
 AcrnGetFirstNonAddress (
-  OUT  UINT64               *MaxAddress OPTIONAL
+  OUT  UINT64               *MaxAddress
   )
 {
   ACRN_E820_INFO    *E820;
@@ -139,37 +139,14 @@ AcrnGetFirstNonAddress (
 
 RETURN_STATUS
 AcrnFindPciMmio64Aperture (
-  OUT  UINT64               *Pci64Base OPTIONAL,
-  OUT  UINT64               *Pci64Size OPTIONAL
+  OUT  UINT64               *Pci64Base,
+  OUT  UINT64               *Pci64Size
   )
 {
-  ACRN_E820_INFO    *E820;
-  UINT32            Loop;
-  EFI_E820_ENTRY64  *Entry;
+  *Pci64Base = BASE_4GB;
+  *Pci64Size = SIZE_1GB;
 
-  //
-  // Parse for 64-bit PCI host aperture in E820 map
-  //
-  E820 = (VOID *)ACRN_E820_PHYSICAL_ADDRESS;
-
-  if (!E820IsValid (E820)) {
-    return RETURN_UNSUPPORTED;
-  }
-
-  for (Loop = 0, Entry = &E820->E820Map[Loop]; Loop < E820->E820EntriesCount;
-       Entry = &E820->E820Map[++Loop]) {
-    if (Entry->BaseAddr >= BASE_4GB &&
-        Entry->Type == EfiAcpiAddressRangeReserved) {
-      //
-      // 64-bit PCI host aperture
-      //
-      *Pci64Base = Entry->BaseAddr;
-      *Pci64Size = Entry->Length;
-      return RETURN_SUCCESS;
-    }
-  }
-
-  return RETURN_NOT_FOUND;
+  return RETURN_SUCCESS;
 }
 
 
@@ -179,6 +156,7 @@ AcrnPublishRamRegions (
   )
 {
   ACRN_E820_INFO    *E820;
+  UINT64            PciExBarBase;
   BOOLEAN           MtrrSupported;
   UINT32            Loop;
   EFI_E820_ENTRY64  *Entry;
@@ -194,21 +172,20 @@ AcrnPublishRamRegions (
 
   DEBUG ((EFI_D_INFO, "Using memory map provided by ACRN\n"));
 
+  PciExBarBase = FixedPcdGet64 (PcdPciExpressBaseAddress);
   MtrrSupported = IsMtrrSupported ();
 
   for (Loop = 0, Entry = &E820->E820Map[Loop]; Loop < E820->E820EntriesCount;
        Entry = &E820->E820Map[++Loop]) {
-    //
-    // Only care about RAM
-    //
-    if (Entry->Type != EfiAcpiAddressRangeMemory) {
-      continue;
-    }
+    if (Entry->Type == EfiAcpiAddressRangeMemory) {
+      AddMemoryBaseSizeHob (Entry->BaseAddr, Entry->Length);
 
-    AddMemoryBaseSizeHob (Entry->BaseAddr, Entry->Length);
-
-    if (MtrrSupported) {
-      MtrrSetMemoryAttribute (Entry->BaseAddr, Entry->Length, CacheWriteBack);
+      if (MtrrSupported) {
+        MtrrSetMemoryAttribute (Entry->BaseAddr, Entry->Length, CacheWriteBack);
+      }
+    } else if (Entry->Type == EfiAcpiAddressRangeReserved &&
+               (Entry->BaseAddr < PciExBarBase || Entry->BaseAddr >= BASE_4GB)) {
+      AddReservedMemoryBaseSizeHob (Entry->BaseAddr, Entry->Length, FALSE);
     }
   }
 

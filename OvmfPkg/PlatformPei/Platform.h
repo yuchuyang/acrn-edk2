@@ -112,23 +112,23 @@ XenPublishRamRegions (
 
 RETURN_STATUS
 AcrnGetSystemMemorySizeBelow4gb (
-  OUT  UINT32               *MemSize OPTIONAL
+  OUT  UINT32               *MemSize
   );
 
 RETURN_STATUS
 AcrnGetSystemMemorySizeAbove4gb (
-  OUT  UINT64               *MemSize OPTIONAL
+  OUT  UINT64               *MemSize
   );
 
 RETURN_STATUS
 AcrnGetFirstNonAddress (
-  OUT  UINT64               *MaxAddress OPTIONAL
+  OUT  UINT64               *MaxAddress
   );
 
 RETURN_STATUS
 AcrnFindPciMmio64Aperture (
-  OUT  UINT64               *Pci64Base OPTIONAL,
-  OUT  UINT64               *Pci64Size OPTIONAL
+  OUT  UINT64               *Pci64Base,
+  OUT  UINT64               *Pci64Size
   );
 
 RETURN_STATUS
