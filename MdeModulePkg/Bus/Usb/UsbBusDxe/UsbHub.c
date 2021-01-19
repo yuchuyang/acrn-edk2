@@ -14,6 +14,7 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 **/
 
 #include "UsbBus.h"
+#include <Library/TimerLib.h>
 
 //
 // Array that maps the change bit to feature value which is
@@ -996,6 +997,12 @@ UsbRootHubInit (
   if (EFI_ERROR (Status)) {
     return Status;
   }
+
+  //
+  // Wait 50ms to increase the chance of successful bus enumeration
+  // upon the first notification.
+  //
+  MicroSecondDelay (50 * 1000);
 
   //
   // It should signal the event immediately here, or device detection

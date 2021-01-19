@@ -1286,9 +1286,10 @@ ConnectRecursivelyIfPciMassStorage (
   CHAR16                    *DevPathStr;
 
   //
-  // Recognize PCI Mass Storage, and Xen PCI devices
+  // Recognize PCI Mass Storage, USB and Xen PCI devices
   //
   if (IS_CLASS1 (PciHeader, PCI_CLASS_MASS_STORAGE) ||
+      IS_CLASS2 (PciHeader, PCI_CLASS_SERIAL, PCI_CLASS_SERIAL_USB) ||
       (XenDetected() && IS_CLASS2 (PciHeader, 0xFF, 0x80))) {
     DevicePath = NULL;
     Status = gBS->HandleProtocol (
@@ -1310,7 +1311,10 @@ ConnectRecursivelyIfPciMassStorage (
         "Found %s device: %s\n",
         (IS_CLASS1 (PciHeader, PCI_CLASS_MASS_STORAGE) ?
          L"Mass Storage" :
-         L"Xen"
+         (IS_CLASS2 (PciHeader, PCI_CLASS_SERIAL, PCI_CLASS_SERIAL_USB) ?
+          L"USB" :
+          L"Xen"
+          )
          ),
         DevPathStr
         ));

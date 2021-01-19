@@ -60,7 +60,7 @@ typedef struct _USB_HUB_API    USB_HUB_API;
 
 //
 // Roothub and hub's polling interval, set by experience,
-// The unit of roothub is 100us, means 100ms as interval, and
+// The unit of roothub is 100ns, means 100ms as interval, and
 // the unit of hub is 1ms, means 64ms as interval.
 //
 #define USB_ROOTHUB_POLL_INTERVAL (100 * 10000U)
