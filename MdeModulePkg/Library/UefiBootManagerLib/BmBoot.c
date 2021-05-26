@@ -27,6 +27,20 @@ EFI_BOOT_MANAGER_LEGACY_BOOT                 mBmLegacyBoot              = NULL;
 EFI_GUID mBmHardDriveBootVariableGuid = { 0xfab7e9e1, 0x39dd, 0x4f2b, { 0x84, 0x08, 0xe2, 0x0e, 0x90, 0x6c, 0xb6, 0xde } };
 EFI_GUID mBmAutoCreateBootOptionGuid  = { 0x8108ac4e, 0x9f11, 0x4d59, { 0x85, 0x0e, 0xe2, 0x1a, 0x52, 0x2c, 0x59, 0xb2 } };
 
+UINT64 tsc(
+    void)
+{
+  UINT64 tsc;  // EDX:EAX
+  UINT32 tscH; // EDX
+  UINT32 tscL; // EAX
+
+  __asm volatile ("rdtsc":"=a"(tscL),"=d"(tscH));
+  tsc = tscH;
+  tsc = (tsc<<32)|tscL;
+
+  return tsc;
+}
+
 /**
 
   End Perf entry of BDS
@@ -45,6 +59,7 @@ BmEndOfBdsPerfCode (
   //
   // Record the performance data for End of BDS
   //
+  _DEBUG ((DEBUG_ERROR, "[OVMF] End of BDS = %lld\n", tsc()));
   PERF_CROSSMODULE_END("BDS");
 
   return ;
@@ -1893,9 +1908,9 @@ EfiBootManagerBoot (
   //
   // Write boot to OS performance data for UEFI boot
   //
-  PERF_CODE (
+  //PERF_CODE (
     BmEndOfBdsPerfCode (NULL, NULL);
-  );
+  //);
 
   REPORT_STATUS_CODE (EFI_PROGRESS_CODE, PcdGet32 (PcdProgressCodeOsLoaderStart));
 

@@ -136,6 +136,21 @@ ShadowPeiCore (
                          If NULL, it is first PeiCore entering.
 
 **/
+
+UINT64 rdtsc(
+    void)
+{
+  UINT64 tsc;  // EDX:EAX
+  UINT32 tscH; // EDX
+  UINT32 tscL; // EAX
+
+  __asm volatile ("rdtsc":"=a"(tscL),"=d"(tscH));
+  tsc = tscH;
+  tsc = (tsc<<32)|tscL;
+
+  return tsc;
+}
+
 VOID
 EFIAPI
 PeiCore (
@@ -352,11 +367,13 @@ PeiCore (
   // Update performance measurements
   //
   if (OldCoreData == NULL) {
+    _DEBUG ((DEBUG_ERROR, "[OVMF] End of SEC = %lld\n", rdtsc()));
     PERF_EVENT ("SEC"); // Means the end of SEC phase.
 
     //
     // If first pass, start performance measurement.
     //
+    _DEBUG ((DEBUG_ERROR, "[OVMF] Begin of PEI = %lld\n", rdtsc()));
     PERF_CROSSMODULE_BEGIN ("PEI");
     PERF_INMODULE_BEGIN ("PreMem");
 

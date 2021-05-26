@@ -223,6 +223,20 @@ EFI_DECOMPRESS_PROTOCOL  gEfiDecompress = {
 //
 GLOBAL_REMOVE_IF_UNREFERENCED EFI_LOAD_FIXED_ADDRESS_CONFIGURATION_TABLE    gLoadModuleAtFixAddressConfigurationTable = {0, 0};
 
+UINT64 tsc(
+    void)
+{
+  UINT64 tsc;  // EDX:EAX
+  UINT32 tscH; // EDX
+  UINT32 tscL; // EAX
+
+  __asm volatile ("rdtsc":"=a"(tscL),"=d"(tscH));
+  tsc = tscH;
+  tsc = (tsc<<32)|tscL;
+
+  return tsc;
+}
+
 // Main entry point to the DXE Core
 //
 
@@ -301,7 +315,9 @@ DxeMain (
   // Call constructor for all libraries
   //
   ProcessLibraryConstructorList (gDxeCoreImageHandle, gDxeCoreST);
+  _DEBUG ((DEBUG_ERROR, "[OVMF] End of PEI = %lld\n", tsc()));
   PERF_CROSSMODULE_END   ("PEI");
+  _DEBUG ((DEBUG_ERROR, "[OVMF] Begin of DXE = %lld\n", tsc()));
   PERF_CROSSMODULE_BEGIN ("DXE");
 
   //

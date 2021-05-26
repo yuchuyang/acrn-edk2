@@ -634,6 +634,20 @@ BdsFormalizeEfiGlobalVariable (
   BdsFormalizeOSIndicationVariable ();
 }
 
+UINT64 rdtsc(
+    void)
+{
+  UINT64 tsc;  // EDX:EAX
+  UINT32 tscH; // EDX
+  UINT32 tscL; // EAX
+
+  __asm volatile ("rdtsc":"=a"(tscL),"=d"(tscH));
+  tsc = tscH;
+  tsc = (tsc<<32)|tscL;
+
+  return tsc;
+}
+
 /**
 
   Service routine for BdsInstance->Entry(). Devices are connected, the
@@ -676,7 +690,9 @@ BdsEntry (
   //
   // Insert the performance probe
   //
+  _DEBUG ((DEBUG_ERROR, "[OVMF] End of DXE = %lld\n", rdtsc()));
   PERF_CROSSMODULE_END("DXE");
+   _DEBUG ((DEBUG_ERROR, "[OVMF] Begin of BDS = %lld\n", rdtsc()));
   PERF_CROSSMODULE_BEGIN("BDS");
   DEBUG ((EFI_D_INFO, "[Bds] Entry...\n"));
 
