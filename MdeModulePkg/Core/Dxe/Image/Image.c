@@ -14,6 +14,19 @@ WITHOUT WARRANTIES OR REPRESENTATIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED.
 
 #include "DxeMain.h"
 #include "Image.h"
+//
+// Driver Table
+//
+CHAR8 EfiFileName[256];
+struct tablenode{
+       UINT64 runtime;
+       CHAR8 drivername[256];
+};
+struct tablenode drivertable[20];
+INTN tableMax = 20;
+UINT64 totaldriverruntime = 0;
+INTN drivercount = 0;
+INTN tableIndex = 0;
 
 //
 // Module Globals
@@ -730,7 +743,6 @@ CoreLoadPeImage (
 
     UINTN Index;
     UINTN StartIndex;
-    CHAR8 EfiFileName[256];
 
 
     DEBUG ((DEBUG_INFO | DEBUG_LOAD,
@@ -1584,6 +1596,16 @@ UINT64 rdtsc(
 
   return tsc;
 }
+
+void arrcpy(CHAR8 *arr1, CHAR8 *arr2, UINT64 len){
+  INTN idx = 0;
+  while (idx < len) {
+    *arr1++ = *arr2++;
+    idx++;
+  }
+  return;
+}
+
 EFI_STATUS
 EFIAPI
 CoreStartImage (
@@ -1668,6 +1690,8 @@ CoreStartImage (
     // Call the image's entry point
     //
     Image->Started = TRUE;
+
+
     //
     // OVMF boot time measurement
     //
@@ -1676,13 +1700,91 @@ CoreStartImage (
     if (StrStr(DevicePathStr, L"BOOTX64.EFI")) {
 	_DEBUG ((DEBUG_ERROR, "\n\n[OVMF] RDTSC = %lld\t", rdtsc()));
 	_DEBUG ((DEBUG_ERROR, "Device path: %s\n", DevicePathStr));
-    }
+        _DEBUG ((DEBUG_ERROR, "[OVMF] Loaded %d drivers, total runtime: %lld\n\n", drivercount, totaldriverruntime));
+        // Print final table
+        _DEBUG((DEBUG_ERROR, "================Final Table===============\n"));
+        for (INTN i = 0; i < tableMax; i++) {
+          _DEBUG ((DEBUG_ERROR, "[DriverTable][%d] runtime =  %lld\t\t", i, drivertable[i].runtime));
+          _DEBUG ((DEBUG_ERROR, "dirvername = %a\n", drivertable[i].drivername));
+	}
+    }// End of if (StrStr(DevicePathStr, L"BOOTX64.EFI"))
     if (DevicePathStr != NULL) {
       FreePool (DevicePathStr);
     }
-    // End of boot time measurement
+    //
+    // End of OVMF boot time measurement
+    //
+
+
+    //
+    // Driver ranking
+    //
+    UINT64 start = 0;
+    UINT64 end = 0;
+    start = rdtsc();
+    //DEBUG ((DEBUG_ERROR, "[DriverImage] Image at %11p started,", Image->Info.ImageBase));
+    //DEBUG ((DEBUG_ERROR, " start tsc = %lld ticks\n", start));
 
     Image->Status = Image->EntryPoint (ImageHandle, Image->Info.SystemTable);
+
+    //DEBUG ((DEBUG_ERROR, "[DriverImage] Image at %11p ended,", Image->Info.ImageBase));
+    end = rdtsc();
+    //DEBUG ((DEBUG_ERROR, " end tsc =  %lld ticks,", end));
+    end = end - start;
+    //DEBUG ((DEBUG_ERROR, " total runtime = %lld\n", end));
+    totaldriverruntime += end;
+    drivercount++;
+    // Create table
+    if (tableIndex < tableMax) {
+      drivertable[tableIndex].runtime = end;
+      //DEBUG ((DEBUG_ERROR, "[DriverImage] runtime =  %lld\n", drivertable[tableIndex].runtime));
+      arrcpy(drivertable[tableIndex].drivername, EfiFileName, 256);
+      //DEBUG ((DEBUG_ERROR, "[DriverImage] dirvername =  %a\n", drivertable[tableIndex].drivername));
+      tableIndex++;
+      // Sort table
+      if (tableIndex == tableMax) {
+        INTN i, j;
+        for(i = 0; i < tableMax-1; i++) {
+          for (j = 0; j < tableMax-i-1; j++){
+            // Swap content
+            if (drivertable[j].runtime < drivertable[j+1].runtime) {
+              UINT64 tmp = drivertable[j].runtime;
+              CHAR8 tmpname[256];
+              arrcpy(tmpname, drivertable[j].drivername, 256);
+              arrcpy(drivertable[j].drivername, drivertable[j+1].drivername, 256);
+              arrcpy(drivertable[j+1].drivername, tmpname,256);
+              drivertable[j].runtime = drivertable[j+1].runtime;
+              drivertable[j+1].runtime = tmp;
+            }
+          } // End of j for loop
+        } // End of i for loop
+        // Print sorted table
+        //DEBUG((DEBUG_ERROR, "================Sorted Table===============\n"));
+        //for (INTN i = 0; i < tableMax; i++) {
+        //  DEBUG ((DEBUG_ERROR, "[DriverTable][%d] runtime =  %lld\t\t", i, drivertable[i].runtime));
+        //  DEBUG ((DEBUG_ERROR, "dirvername = %a\n", drivertable[i].drivername));
+        //}
+      }// End of sort table
+    } else {
+      // Do the inserction if the coming driver is slower than existing one
+      if ( end > drivertable[tableMax-1].runtime) {
+        INTN i;
+        for ( i = tableMax - 2; i >= 0 && drivertable[i].runtime < end; i--){
+          drivertable[i+1].runtime = drivertable[i].runtime;
+          arrcpy(drivertable[i+1].drivername, drivertable[i].drivername, 256);
+        }
+        drivertable[i+1].runtime = end;
+        arrcpy(drivertable[i+1].drivername, EfiFileName, 256);
+      }
+    } // End of else
+    // Print table
+    //if (tableIndex == tableMax-1){
+    //  DEBUG((DEBUG_ERROR, "================Initial Table===============\n"));
+    //  for (INTN i = 0; i < tableMax-1; i++) {
+    //    DEBUG ((DEBUG_ERROR, "[DriverTable][%d] runtime =  %lld\t\t", i, drivertable[i].runtime));
+    //    DEBUG ((DEBUG_ERROR, "dirvername = %a\n", drivertable[i].drivername));
+    //  }
+    //}
 
     //
     // Add some debug information if the image returned with error.
