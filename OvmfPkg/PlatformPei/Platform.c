@@ -662,7 +662,7 @@ FsbDetect (
       AsmCpuid (0x40000010, &RegEax, NULL, NULL, NULL);
       Status = PcdSet32S (PcdFSBClock, RegEax * 1000);
       ASSERT_RETURN_ERROR (Status);
-      DEBUG ((DEBUG_INFO, "FSB clock detected: %u Hz\n", PcdGet32 (PcdFSBClock)));
+      _DEBUG ((DEBUG_INFO, "FSB clock detected: %u Hz\n", PcdGet32 (PcdFSBClock)));
     }
   }
 }

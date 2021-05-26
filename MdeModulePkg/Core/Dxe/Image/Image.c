@@ -1571,6 +1571,19 @@ CoreLoadImageEx (
                                   entry point.
 
 **/
+UINT64 rdtsc(
+    void)
+{
+  UINT64 tsc;  // EDX:EAX
+  UINT32 tscH; // EDX
+  UINT32 tscL;// EAX
+
+  __asm volatile ("rdtsc":"=a"(tscL),"=d"(tscH));
+  tsc = tscH;
+  tsc = (tsc<<32)|tscL;
+
+  return tsc;
+}
 EFI_STATUS
 EFIAPI
 CoreStartImage (
@@ -1655,6 +1668,20 @@ CoreStartImage (
     // Call the image's entry point
     //
     Image->Started = TRUE;
+    //
+    // OVMF boot time measurement
+    //
+    CHAR16 *DevicePathStr;
+    DevicePathStr = ConvertDevicePathToText (Image->LoadedImageDevicePath, FALSE, FALSE);
+    if (StrStr(DevicePathStr, L"BOOTX64.EFI")) {
+	_DEBUG ((DEBUG_ERROR, "\n\n[OVMF] RDTSC = %lld\t", rdtsc()));
+	_DEBUG ((DEBUG_ERROR, "Device path: %s\n", DevicePathStr));
+    }
+    if (DevicePathStr != NULL) {
+      FreePool (DevicePathStr);
+    }
+    // End of boot time measurement
+
     Image->Status = Image->EntryPoint (ImageHandle, Image->Info.SystemTable);
 
     //
@@ -1672,6 +1699,7 @@ CoreStartImage (
     // If the image returns, exit it through Exit()
     //
     CoreExit (ImageHandle, Image->Status, 0, NULL);
+
   }
 
   //
